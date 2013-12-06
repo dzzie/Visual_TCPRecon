@@ -1,0 +1,13 @@
+*.frm eol=crlf
+*.bas eol=crlf
+*.cls eol=crlf
+*.ctl eol=crlf
+*.vbp eol=crlf
+*.txt eol=crlf
+*.js eol=crlf
+*.iss eol=crlf
+*.cs eol=crlf
+*.csproj eol=crlf
+*.resx eol=crlf
+*.settings eol=crlf
+*.sln eol=crlf
