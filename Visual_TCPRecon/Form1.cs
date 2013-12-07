@@ -34,99 +34,26 @@ namespace Visual_TCPRecon
 
     public partial class Form1 : Form
     {
-        
         static string outDir = "";
-
-        // Holds the file streams for each tcp session in case we use libnids
-        static Dictionary<Connection, FileStream> nidsDict;
-        static Dictionary<Connection, TcpRecon> sharpPcapDict = new Dictionary<Connection, TcpRecon>();
-       
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        #region "Callback Functions"
-
-        // The callback function for the managedLibnids library
-        static void handleData(byte[] arr, UInt32 sourceIP, UInt16 sourcePort, UInt32 destinationIP, UInt16 destinationPort, bool urgent)
+        public void NewStream(TcpRecon recon)
         {
-            System.Net.IPAddress srcIp = new System.Net.IPAddress(sourceIP);
-            System.Net.IPAddress dstIp = new System.Net.IPAddress(destinationIP);
-            
-            Connection c = new Connection(srcIp.ToString(), sourcePort, dstIp.ToString(), destinationPort);
-
-            // create a new entry if the key does not exists
-            if (!nidsDict.ContainsKey(c))
-            {
-                c.generateFileName(outDir);
-                FileStream fStream = new FileStream(c.fileName, FileMode.Create);
-                nidsDict.Add(c, fStream);
-            }
-
-            // write the new data to file
-            nidsDict[c].Write(arr, 0, arr.Length); 
+            TreeNode n = tv.Nodes.Add(recon.HashCode, Path.GetFileName(recon.dumpFile));
+            n.Tag = recon;
         }
-        
-        // The callback function for the SharpPcap library
-        private void device_PcapOnPacketArrival(object sender, Packet packet)
+
+        private void NewNode(DataBlock db)
         {
-            if (!(packet is TCPPacket)) return;
+            string display = string.Format("{0:x},{1:x}, srcPort:{2}", db.startOffset, db.length, db.recon.LastSourcePort);
 
-            TCPPacket tcpPacket = (TCPPacket)packet;
-            Connection c = new Connection(tcpPacket);
-            TcpRecon recon = null;
-            TreeNode n = null;
-
-            if (!sharpPcapDict.ContainsKey(c))
-            {
-                c.generateFileName(outDir);
-                recon = new TcpRecon(c.fileName);
-                recon.LastSourcePort = tcpPacket.SourcePort;
-                sharpPcapDict.Add(c, recon);
-                n = tv.Nodes.Add(recon.HashCode, Path.GetFileName(c.fileName));
-                n.Tag = recon;
-            }else{
-                recon = sharpPcapDict[c];
-            }
-            
-            //long startAt = recon.CurrentOffset; //before any packet writes
-            recon.ReassemblePacket(tcpPacket);  //can contain fragments and out of order packets 
-
-            if (recon.PacketWritten) //reassembly/reordering complete data was saved this time..
-            {
-                if (recon.LastSourcePort != tcpPacket.SourcePort) //previous entry is now complete so lets add it.
-                {
-                    AddSubNode(recon);
-                    recon.LastSourcePort = tcpPacket.SourcePort;
-                }
-
-                /*
-                long endAt = recon.CurrentOffset;
-                string display = string.Format("{0:x},{1:x}, sz:{2:x} srcPort:{3}", startAt, endAt, endAt - startAt, tcpPacket.SourcePort);
-                n = tv.Nodes[recon.HashCode];
-                n.Nodes.Add(display);*/
-
-                 
-            }
-
-        }
-        #endregion
-
-        private void AddSubNode(TcpRecon recon)
-        {
-            TreeNode n = null;
-            long startAt = recon.LastSavedOffset;
-            long endAt = recon.PreviousPacketEndOffset;
-            if (recon.isComplete) endAt = recon.CurrentOffset;
-
-            int srcPort = recon.LastSourcePort;
-            string display = string.Format("{0:x},{1:x}, srcPort:{2}", startAt, endAt - startAt, srcPort);
-
-            n = tv.Nodes[recon.HashCode];
-            n.Nodes.Add(display);
-            recon.LastSavedOffset = recon.PreviousPacketEndOffset;
+            TreeNode n = tv.Nodes[db.recon.HashCode];
+            TreeNode nn = n.Nodes.Add(display);
+            nn.Tag = db;
 
             tv.Refresh();
             this.Refresh();
@@ -164,44 +91,8 @@ namespace Visual_TCPRecon
             this.Text = "Loading pcap file...";
             this.Refresh();
 
-            if (chkUselibnids.Checked)
-            {
-                MessageBox.Show("I havent done any updates on this block of code yet..");
-                nidsDict = new Dictionary<Connection, FileStream>();
-                managedLibnids.LibnidsWrapper.Run(capFile, new DataCallbackDelagate(handleData), new DataCallbackDelagate(handleData));
-                foreach (FileStream fs in nidsDict.Values){fs.Close();}
-                nidsDict.Clear();
-            }
-            else
-            {
-                sharpPcapDict = new Dictionary<Connection, TcpRecon>();
-                PcapDevice device;
-
-                try
-                {
-                    device = SharpPcap.GetPcapOfflineDevice(capFile);
-                    device.PcapOpen();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error Loading pcap with SharpPcap: " + ex.Message);
-                    return;
-                }
-
-                device.PcapOnPacketArrival += new SharpPcap.PacketArrivalEvent(device_PcapOnPacketArrival);
-                device.PcapCapture(SharpPcap.INFINITE); //parse entire pcap until EOF
-                device.PcapClose();
-
-                foreach (TreeNode n in tv.Nodes)
-                {
-                    TcpRecon tr = (TcpRecon)n.Tag;
-                    tr.isComplete = true;
-                    if (tr.LastSavedOffset != tr.CurrentOffset) AddSubNode(tr);
-                }
-
-                foreach (TcpRecon tr in sharpPcapDict.Values){tr.Close();}
-                sharpPcapDict.Clear();
-            }
+            ReconManager rm = new ReconManager(NewStream, NewNode);
+            rm.LoadPcap(capFile, outDir);
 
             //remove any top level nodes without children..
             foreach (TreeNode n in tv.Nodes) if (n.Nodes.Count == 0) n.Remove();
@@ -210,7 +101,6 @@ namespace Visual_TCPRecon
             TimeSpan totalTime = (finishTime - startTime);
 
             this.Text = string.Format("Total reconstruct time: {0} seconds", totalTime.TotalSeconds);
-
         }
 
         private void tv_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -310,6 +200,22 @@ namespace Visual_TCPRecon
 
             }
 
+
+        }
+
+        private void scanForHTTPRequestsToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            
+            MessageBox.Show("todo");
+            return;
+
+            foreach (TreeNode n in tv.Nodes)
+            {
+                foreach (TreeNode nn in n.Nodes)
+                {
+                    //todo
+                }
+            }
 
         }
 

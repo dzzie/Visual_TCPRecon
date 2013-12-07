@@ -14,5 +14,8 @@
 *.rar
 */bin/*
 */obj/*
+*/_*
+*.bat
+*test.exe
 
 

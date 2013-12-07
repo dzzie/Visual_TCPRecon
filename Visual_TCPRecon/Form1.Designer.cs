@@ -41,8 +41,12 @@
             this.extractStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fDlg = new System.Windows.Forms.FolderBrowserDialog();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scanForHTTPRequestsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.he)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dlg
@@ -52,7 +56,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 10);
+            this.label1.Location = new System.Drawing.Point(9, 36);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(54, 13);
             this.label1.TabIndex = 0;
@@ -60,14 +64,14 @@
             // 
             // txtPcap
             // 
-            this.txtPcap.Location = new System.Drawing.Point(76, 6);
+            this.txtPcap.Location = new System.Drawing.Point(76, 32);
             this.txtPcap.Name = "txtPcap";
             this.txtPcap.Size = new System.Drawing.Size(453, 20);
             this.txtPcap.TabIndex = 1;
             // 
             // btnBrowsePcap
             // 
-            this.btnBrowsePcap.Location = new System.Drawing.Point(537, 7);
+            this.btnBrowsePcap.Location = new System.Drawing.Point(537, 33);
             this.btnBrowsePcap.Name = "btnBrowsePcap";
             this.btnBrowsePcap.Size = new System.Drawing.Size(42, 19);
             this.btnBrowsePcap.TabIndex = 2;
@@ -78,7 +82,7 @@
             // chkUselibnids
             // 
             this.chkUselibnids.AutoSize = true;
-            this.chkUselibnids.Location = new System.Drawing.Point(606, 10);
+            this.chkUselibnids.Location = new System.Drawing.Point(606, 36);
             this.chkUselibnids.Name = "chkUselibnids";
             this.chkUselibnids.Size = new System.Drawing.Size(79, 17);
             this.chkUselibnids.TabIndex = 4;
@@ -88,8 +92,9 @@
             // 
             // tv
             // 
+            this.tv.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.tv.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tv.Location = new System.Drawing.Point(12, 43);
+            this.tv.Location = new System.Drawing.Point(12, 69);
             this.tv.Name = "tv";
             this.tv.Size = new System.Drawing.Size(357, 512);
             this.tv.TabIndex = 6;
@@ -98,8 +103,9 @@
             // 
             // he
             // 
+            this.he.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.he.Enabled = true;
-            this.he.Location = new System.Drawing.Point(375, 43);
+            this.he.Location = new System.Drawing.Point(375, 69);
             this.he.Name = "he";
             this.he.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("he.OcxState")));
             this.he.Size = new System.Drawing.Size(765, 512);
@@ -127,22 +133,50 @@
             this.removeStreamToolStripMenuItem.Text = "Remove Stream";
             this.removeStreamToolStripMenuItem.Click += new System.EventHandler(this.removeStreamToolStripMenuItem_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolsToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1155, 24);
+            this.menuStrip1.TabIndex = 8;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.scanForHTTPRequestsToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // scanForHTTPRequestsToolStripMenuItem
+            // 
+            this.scanForHTTPRequestsToolStripMenuItem.Name = "scanForHTTPRequestsToolStripMenuItem";
+            this.scanForHTTPRequestsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.scanForHTTPRequestsToolStripMenuItem.Text = "Scan For HTTP Requests";
+            this.scanForHTTPRequestsToolStripMenuItem.Click += new System.EventHandler(this.scanForHTTPRequestsToolStripMenuItem_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1155, 580);
-            this.Controls.Add(this.he);
+            this.ClientSize = new System.Drawing.Size(1155, 607);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tv);
+            this.Controls.Add(this.he);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.chkUselibnids);
             this.Controls.Add(this.btnBrowsePcap);
             this.Controls.Add(this.txtPcap);
-            this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.he)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -161,6 +195,9 @@
         private System.Windows.Forms.ToolStripMenuItem extractStreamsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeStreamToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog fDlg;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scanForHTTPRequestsToolStripMenuItem;
     }
 }
 

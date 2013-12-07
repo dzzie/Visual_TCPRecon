@@ -30,22 +30,33 @@ regsvr hexed.ocx
 
 subnodes label format is: file_start_offset,data_length  sourceport:
 
+potential todos:
+   - http protocol parser (handle gzip and chunked?)
+   - filter to ignore https traffic? or better yet decode but thats a whole other can of worms
+   - auto extract get and post urls or have a scan/filter than you can run
+   - text view tab, browser view tab, image view tab (browser only loads if explicitly asked for safety) 
 
-/*
- *  This code was modified by dzzie@yahoo.com from the base at:
- *  
- *  TCP Session Reconstruction Tool  
- *  author  : Saar Yahalom, 21 Sep 2007 
- *  original: http://www.codeproject.com/Articles/20501/TCP-Session-Reconstruction-Tool
- *  license : http://www.codeproject.com/info/cpol10.aspx
- * 
- *  dependancies: (included) make sure to run the cmd "regsvr hexed.ocx"
- *     Tamir.IPLib.SharpPcap.dll which contains:
- *          PacketDotNet   http://sourceforge.net/apps/mediawiki/packetnet/index.php?title=Main_Page
- *          SharpPcap      http://sourceforge.net/apps/mediawiki/sharppcap/index.php?title=Main_Page
- *     hexed.ocx -         https://github.com/dzzie/hexed
- *     managedLibnids.dll  http://www.codeproject.com/KB/IP/TcpRecon/Libnids-119_With_managedLibnids.zip
- *     winpcap             http://www.winpcap.org/
- *  
- */
+   
+
+This code was modified by dzzie@yahoo.com from the base at:
+ 
+ tcpRecon: TCP Session Reconstruction Tool  
+ author  : Saar Yahalom, 21 Sep 2007 
+ original: http://www.codeproject.com/Articles/20501/TCP-Session-Reconstruction-Tool
+ license : http://www.codeproject.com/info/cpol10.aspx
+
+ dependancies: (included) make sure to run the cmd "regsvr hexed.ocx" (also installed with pdfstreamdumper/sysanalyzer)
+
+    Tamir.IPLib.SharpPcap.dll which contains:
+
+         PacketDotNet   http://sourceforge.net/apps/mediawiki/packetnet/index.php?title=Main_Page
+         SharpPcap      http://sourceforge.net/apps/mediawiki/sharppcap/index.php?title=Main_Page
+
+    hexed.ocx -         https://github.com/dzzie/hexed
+
+    managedLibnids.dll  http://www.codeproject.com/KB/IP/TcpRecon/Libnids-119_With_managedLibnids.zip
+
+    winpcap             http://www.winpcap.org/
+ 
+
 
