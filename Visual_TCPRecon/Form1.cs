@@ -10,6 +10,7 @@ using Tamir.IPLib.Packets;
 using Tamir.IPLib;
 using System.IO;
 using VTcpRecon;
+using System.Threading;
 
 /*
  *  This code was modified by dzzie@yahoo.com from the base at:
@@ -41,10 +42,14 @@ namespace Visual_TCPRecon
             InitializeComponent();
         }
 
+        #region reconManager callbacks
         public void NewStream(TcpRecon recon)
         {
             TreeNode n = tv.Nodes.Add(recon.HashCode, Path.GetFileName(recon.dumpFile));
             n.Tag = recon;
+
+            tv.Refresh();
+            this.Refresh();
         }
 
         private void NewNode(DataBlock db)
@@ -58,6 +63,14 @@ namespace Visual_TCPRecon
             tv.Refresh();
             this.Refresh();
         }
+
+        private void Complete()
+        {
+            //remove any top level nodes without children
+            //the invokes are not synced with thread end so has to be here i guess...
+            foreach (TreeNode n in tv.Nodes) if (n.Nodes.Count == 0) n.Remove();
+        }
+        #endregion
 
         private void btnBrowsePcap_Click(object sender, EventArgs e)
         {
@@ -91,15 +104,14 @@ namespace Visual_TCPRecon
             this.Text = "Loading pcap file...";
             this.Refresh();
 
-            ReconManager rm = new ReconManager(NewStream, NewNode);
-            rm.LoadPcap(capFile, outDir);
-
-            //remove any top level nodes without children..
-            foreach (TreeNode n in tv.Nodes) if (n.Nodes.Count == 0) n.Remove();
+            ReconManager rm = new ReconManager(NewStream, NewNode, Complete, capFile, outDir, this);
+            Thread mThread = new Thread(new ThreadStart(rm.ProcessPcap));
+            mThread.Start();
+            while (!mThread.IsAlive);
 
             DateTime finishTime = DateTime.Now;
             TimeSpan totalTime = (finishTime - startTime);
-
+      
             this.Text = string.Format("Total reconstruct time: {0} seconds", totalTime.TotalSeconds);
         }
 
@@ -109,24 +121,18 @@ namespace Visual_TCPRecon
             TreeNode n = e.Node;
             bool viewOnly = true;
 
-            if (n.Nodes.Count > 0) 
+            if (n.Tag is TcpRecon) 
             {
                 tr = (TcpRecon)n.Tag;
                 if(he.LoadedFile != tr.dumpFile) he.LoadFile(ref tr.dumpFile, ref viewOnly);
             }
             else
             {
-                string[] sOff = n.Text.Split(',');
-                int startAt = Convert.ToInt32(sOff[0], 16);
-                int selLen = Convert.ToInt32(sOff[1], 16);
-
-                tr = (TcpRecon)n.Parent.Tag;
-                if (he.LoadedFile != tr.dumpFile) he.LoadFile(ref tr.dumpFile, ref viewOnly);
-
-                he.scrollTo(startAt);
-                he.set_SelStart(ref startAt);
-                he.set_SelLength(ref selLen);
-                
+                DataBlock db = (DataBlock)n.Tag;
+                if (he.LoadedFile != db.recon.dumpFile) he.LoadFile(ref db.recon.dumpFile, ref viewOnly);
+                he.scrollTo(db.startOffset);
+                he.set_SelStart(ref db.startOffset);
+                he.set_SelLength(ref db.length);                
             }
 
         }
@@ -160,47 +166,28 @@ namespace Visual_TCPRecon
             if(fDlg.ShowDialog() != DialogResult.OK) return;
 
             string pDir = fDlg.SelectedPath + "\\";
-            TcpRecon recon = null;
+            
             if (n.Nodes.Count == 0)
             {
                 MessageBox.Show("Not a parent node shouldnt happen");
                 return;
             }
 
-            recon = (TcpRecon)n.Tag;
-
-            using (BinaryReader br = new BinaryReader(File.Open(recon.dumpFile, FileMode.Open)))
+            int i = 0;
+            foreach (TreeNode nn in n.Nodes)
             {
-                int i = 0;
-                int maxSize = (int)br.BaseStream.Length;
-
-                foreach (TreeNode nn in n.Nodes)
+                DataBlock db = (DataBlock)nn.Tag;
+                if (db.LoadData())
                 {
-                    string[] sOff = nn.Text.Split(',');
-                    int startAt = Convert.ToInt32(sOff[0], 16);
-                    int selLen = Convert.ToInt32(sOff[1], 16);
-
-                    if (startAt + selLen > maxSize){
-                        selLen = maxSize - startAt;
-                    }
-
-                    if (selLen > 0)
+                    if (db.SaveToFile(pDir + i + ".bin"))
                     {
-                        byte[] b = new byte[selLen];
-                        br.BaseStream.Seek(startAt, SeekOrigin.Begin);
-                        b = br.ReadBytes(selLen);
-                        using (BinaryWriter bw = new BinaryWriter(File.Open(pDir + i + ".bin", FileMode.Create)))
-                        {
-                            bw.Write(b);
-                        }
+                        db.FreeData();
+                        i++;
                     }
-                    i++;
                 }
-
-
             }
 
-
+            MessageBox.Show(string.Format("Extraction Complete {0}/{1} blocks extracted.", i, n.Nodes.Count));
         }
 
         private void scanForHTTPRequestsToolStripMenuItem_Click_1(object sender, EventArgs e)

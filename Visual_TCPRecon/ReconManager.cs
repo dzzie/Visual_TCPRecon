@@ -6,6 +6,7 @@ using VTcpRecon;
 using Tamir.IPLib.Packets;
 using Tamir.IPLib;
 using System.IO;
+using System.Threading;
 
 //there is some ugliness in this file in the way you have to process and conglomerate packets and only
 //know so after the next packet has already been processed. This class hides those details from the
@@ -17,18 +18,27 @@ namespace Visual_TCPRecon
     {
         public string ErrorMessage = "";
         static string outDir = "";
+        static string capFile = "";
+        private Form1 owner;
+
         static Dictionary<Connection, TcpRecon> sharpPcapDict = new Dictionary<Connection, TcpRecon>();
 
         public delegate void _NewStream(TcpRecon recon);
         public delegate void _NewNode(DataBlock db);
+        public delegate void _Complete();
 
         public _NewStream NewStream = null;
         public _NewNode NewNode = null;
+        public _Complete Complete = null;
 
-        public ReconManager(_NewStream ns, _NewNode nn)
+        public ReconManager(_NewStream ns, _NewNode nn, _Complete c,  string pcapFile, string outputDir, Form1 parent)
         {
             NewStream = ns;
             NewNode = nn;
+            Complete = c;
+            outDir = outputDir;
+            capFile = pcapFile;
+            owner = parent;
         }
 
         private void AddNewNode(TcpRecon recon)
@@ -38,7 +48,7 @@ namespace Visual_TCPRecon
             if (recon.isComplete) endAt =(int)recon.CurrentOffset;
 
             DataBlock db = new DataBlock(recon.dumpFile, startAt, endAt - startAt, recon);
-            NewNode(db);
+            owner.Invoke(NewNode, db);
 
             recon.LastSavedOffset = recon.PreviousPacketEndOffset;
         }
@@ -58,7 +68,7 @@ namespace Visual_TCPRecon
                 recon = new TcpRecon(c.fileName);
                 recon.LastSourcePort = tcpPacket.SourcePort;
                 sharpPcapDict.Add(c, recon);
-                NewStream(recon);
+                owner.Invoke(NewStream,recon);
             }else{
                 recon = sharpPcapDict[c];
             }
@@ -76,10 +86,9 @@ namespace Visual_TCPRecon
 
         }
 
-        public bool LoadPcap(string capFile, string outputDir)
+        public void ProcessPcap()
         {
 
-            outDir = outputDir;
             sharpPcapDict = new Dictionary<Connection, TcpRecon>();
             PcapDevice device;
 
@@ -91,7 +100,7 @@ namespace Visual_TCPRecon
             catch (Exception ex)
             {
                 ErrorMessage = "Error Loading pcap with SharpPcap: " + ex.Message;
-                return false;
+                return;// false;
             }
 
             device.PcapOnPacketArrival += new SharpPcap.PacketArrivalEvent(device_PcapOnPacketArrival);
@@ -106,7 +115,8 @@ namespace Visual_TCPRecon
             }
 
             sharpPcapDict.Clear();
-            return true;
+            owner.Invoke(Complete);
+            return;// true;
 
         }
     }
