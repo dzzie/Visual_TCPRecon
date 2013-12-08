@@ -34,9 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtPcap = new System.Windows.Forms.TextBox();
             this.btnBrowsePcap = new System.Windows.Forms.Button();
-            this.chkUselibnids = new System.Windows.Forms.CheckBox();
             this.tv = new System.Windows.Forms.TreeView();
-            this.he = new Axrhexed.AxHexEd();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,9 +42,19 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scanForHTTPRequestsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.he)).BeginInit();
+            this.tabs = new System.Windows.Forms.TabControl();
+            this.HexView = new System.Windows.Forms.TabPage();
+            this.TextView = new System.Windows.Forms.TabPage();
+            this.WebView = new System.Windows.Forms.TabPage();
+            this.he = new Axrhexed.AxHexEd();
+            this.rtf = new System.Windows.Forms.RichTextBox();
+            this.lst = new System.Windows.Forms.ListBox();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tabs.SuspendLayout();
+            this.HexView.SuspendLayout();
+            this.TextView.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.he)).BeginInit();
             this.SuspendLayout();
             // 
             // dlg
@@ -79,17 +87,6 @@
             this.btnBrowsePcap.UseVisualStyleBackColor = true;
             this.btnBrowsePcap.Click += new System.EventHandler(this.btnBrowsePcap_Click);
             // 
-            // chkUselibnids
-            // 
-            this.chkUselibnids.AutoSize = true;
-            this.chkUselibnids.Location = new System.Drawing.Point(606, 36);
-            this.chkUselibnids.Name = "chkUselibnids";
-            this.chkUselibnids.Size = new System.Drawing.Size(79, 17);
-            this.chkUselibnids.TabIndex = 4;
-            this.chkUselibnids.Text = "Use libNids";
-            this.chkUselibnids.UseVisualStyleBackColor = true;
-            this.chkUselibnids.Visible = false;
-            // 
             // tv
             // 
             this.tv.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -100,16 +97,6 @@
             this.tv.TabIndex = 6;
             this.tv.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tv_MouseUp);
             this.tv.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tv_NodeMouseClick);
-            // 
-            // he
-            // 
-            this.he.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.he.Enabled = true;
-            this.he.Location = new System.Drawing.Point(375, 69);
-            this.he.Name = "he";
-            this.he.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("he.OcxState")));
-            this.he.Size = new System.Drawing.Size(765, 512);
-            this.he.TabIndex = 7;
             // 
             // contextMenuStrip1
             // 
@@ -158,25 +145,103 @@
             this.scanForHTTPRequestsToolStripMenuItem.Text = "Scan For HTTP Requests";
             this.scanForHTTPRequestsToolStripMenuItem.Click += new System.EventHandler(this.scanForHTTPRequestsToolStripMenuItem_Click_1);
             // 
+            // tabs
+            // 
+            this.tabs.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tabs.Controls.Add(this.HexView);
+            this.tabs.Controls.Add(this.TextView);
+            this.tabs.Controls.Add(this.WebView);
+            this.tabs.Location = new System.Drawing.Point(375, 69);
+            this.tabs.Name = "tabs";
+            this.tabs.SelectedIndex = 0;
+            this.tabs.Size = new System.Drawing.Size(780, 512);
+            this.tabs.TabIndex = 9;
+            this.tabs.SelectedIndexChanged += new System.EventHandler(this.tabs_SelectedIndexChanged);
+            // 
+            // HexView
+            // 
+            this.HexView.Controls.Add(this.he);
+            this.HexView.Location = new System.Drawing.Point(4, 4);
+            this.HexView.Name = "HexView";
+            this.HexView.Padding = new System.Windows.Forms.Padding(3);
+            this.HexView.Size = new System.Drawing.Size(772, 486);
+            this.HexView.TabIndex = 0;
+            this.HexView.Text = "HexView";
+            this.HexView.UseVisualStyleBackColor = true;
+            // 
+            // TextView
+            // 
+            this.TextView.Controls.Add(this.rtf);
+            this.TextView.Location = new System.Drawing.Point(4, 4);
+            this.TextView.Name = "TextView";
+            this.TextView.Padding = new System.Windows.Forms.Padding(3);
+            this.TextView.Size = new System.Drawing.Size(772, 486);
+            this.TextView.TabIndex = 1;
+            this.TextView.Text = "TextView";
+            this.TextView.UseVisualStyleBackColor = true;
+            // 
+            // WebView
+            // 
+            this.WebView.Location = new System.Drawing.Point(4, 4);
+            this.WebView.Name = "WebView";
+            this.WebView.Padding = new System.Windows.Forms.Padding(3);
+            this.WebView.Size = new System.Drawing.Size(772, 486);
+            this.WebView.TabIndex = 2;
+            this.WebView.Text = "WebView";
+            this.WebView.UseVisualStyleBackColor = true;
+            // 
+            // he
+            // 
+            this.he.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.he.Enabled = true;
+            this.he.Location = new System.Drawing.Point(3, 9);
+            this.he.Name = "he";
+            this.he.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("he.OcxState")));
+            this.he.Size = new System.Drawing.Size(766, 471);
+            this.he.TabIndex = 8;
+            // 
+            // rtf
+            // 
+            this.rtf.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtf.Location = new System.Drawing.Point(3, 6);
+            this.rtf.Name = "rtf";
+            this.rtf.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtf.Size = new System.Drawing.Size(766, 474);
+            this.rtf.TabIndex = 0;
+            this.rtf.Text = "";
+            // 
+            // lst
+            // 
+            this.lst.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lst.FormattingEnabled = true;
+            this.lst.ItemHeight = 17;
+            this.lst.Location = new System.Drawing.Point(12, 587);
+            this.lst.Name = "lst";
+            this.lst.Size = new System.Drawing.Size(1139, 106);
+            this.lst.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1155, 607);
+            this.ClientSize = new System.Drawing.Size(1155, 706);
+            this.Controls.Add(this.lst);
+            this.Controls.Add(this.tabs);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tv);
-            this.Controls.Add(this.he);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.chkUselibnids);
             this.Controls.Add(this.btnBrowsePcap);
             this.Controls.Add(this.txtPcap);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.he)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabs.ResumeLayout(false);
+            this.HexView.ResumeLayout(false);
+            this.TextView.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.he)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -188,9 +253,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtPcap;
         private System.Windows.Forms.Button btnBrowsePcap;
-        private System.Windows.Forms.CheckBox chkUselibnids;
         private System.Windows.Forms.TreeView tv;
-        private Axrhexed.AxHexEd he;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem extractStreamsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeStreamToolStripMenuItem;
@@ -198,6 +261,13 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scanForHTTPRequestsToolStripMenuItem;
+        private System.Windows.Forms.TabControl tabs;
+        private System.Windows.Forms.TabPage HexView;
+        private System.Windows.Forms.TabPage TextView;
+        private Axrhexed.AxHexEd he;
+        private System.Windows.Forms.RichTextBox rtf;
+        private System.Windows.Forms.TabPage WebView;
+        private System.Windows.Forms.ListBox lst;
     }
 }
 

@@ -31,9 +31,28 @@ namespace Visual_TCPRecon
             return new string[0];
         }
 
-        public string ToString()
+        public string AsString(){ return AsString(this.length); }
+
+        public string AsString(int maxLen)
         {
-            return "todo";
+            bool iLoaded = false;
+            if (!dataLoaded)
+            {
+                if ( this.LoadData() )
+                {
+                    iLoaded = true;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            byte[] buf = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, data, 0, maxLen);
+            string ret = Encoding.UTF8.GetString(buf, 0, buf.Length);
+
+            if (iLoaded) this.FreeData();
+            return ret;
         }
 
         public void FreeData()
