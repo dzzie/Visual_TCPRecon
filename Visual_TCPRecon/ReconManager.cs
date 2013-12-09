@@ -25,17 +25,20 @@ namespace Visual_TCPRecon
 
         public delegate void _NewStream(TcpRecon recon);
         public delegate void _NewNode(DataBlock db);
+        public delegate void _DNS(cDNS dns);
         public delegate void _Complete();
 
         public _NewStream NewStream = null;
         public _NewNode NewNode = null;
         public _Complete Complete = null;
+        public _DNS DNS = null;
 
-        public ReconManager(_NewStream ns, _NewNode nn, _Complete c,  string pcapFile, string outputDir, Form1 parent)
+        public ReconManager(_NewStream ns, _NewNode nn, _Complete c, _DNS d,  string pcapFile, string outputDir, Form1 parent)
         {
             NewStream = ns;
             NewNode = nn;
             Complete = c;
+            DNS = d;
             outDir = outputDir;
             capFile = pcapFile;
             owner = parent;
@@ -53,9 +56,30 @@ namespace Visual_TCPRecon
             recon.LastSavedOffset = recon.PreviousPacketEndOffset;
         }
 
+        private void HandleDNS(Packet packet)
+        {
+            //right now we are only passing up dns requests where we were able to extract the name
+            UDPPacket udp = (UDPPacket)packet;
+            if (udp.DestinationPort == 53) //its a request
+            {
+                cDNS dns = new cDNS(udp.UDPData);
+                if (!dns.isResponse && dns.dnsName.Length > 0)
+                {
+                    owner.Invoke(DNS, dns);
+                }
+            }
+
+        }
+
         // The callback function for the SharpPcap library
         private void device_PcapOnPacketArrival(object sender, Packet packet)
         {
+            if (packet is UDPPacket)
+            {
+                HandleDNS(packet);
+                return;
+            }
+            
             if (!(packet is TCPPacket)) return;
 
             TCPPacket tcpPacket = (TCPPacket)packet;

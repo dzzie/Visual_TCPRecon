@@ -41,12 +41,14 @@ namespace Visual_TCPRecon
         DateTime startTime;
         DataBlock curdb = null;
         Object blankUrl = "about:blank";
+        ListView selLV;
 
         public Form1()
         {
             InitializeComponent();
             Form1_Resize(null, null);
             lv.ContextMenuStrip = mnuLvPopup;
+            lvDNS.ContextMenuStrip = mnuLvPopup;
         }
 
         #region reconManager callbacks
@@ -92,7 +94,7 @@ namespace Visual_TCPRecon
                             }
                             else
                             {//we have some extra display room with just short HTTP response code, so lets use it..
-                                nn.Text += string.Format("   - 0x{0:x} bytes", db.length);
+                                nn.Text = "   " + nn.Text + string.Format("   - 0x{0:x} bytes", db.length);
                                 if (db.isGZip) nn.Text += " w/gzip";
                             }
                         }
@@ -106,10 +108,17 @@ namespace Visual_TCPRecon
             //post processing here.. remove ssl?, extract http requests for summary? detect and handle gzip?
 
         }
+
+        private void DNS(cDNS dns)
+        {
+            lvDNS.Items.Add(dns.dnsName);
+        }
+
         #endregion
 
         private void btnBrowsePcap_Click(object sender, EventArgs e)
         {
+            dlg.Filter = "Pcap files (*.pcap)|*.pcap";
             dlg.FileName = System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
             if(dlg.ShowDialog() != DialogResult.OK) return;
             txtPcap.Text = dlg.FileName;
@@ -142,7 +151,7 @@ namespace Visual_TCPRecon
             this.Text = "Loading pcap file...";
             this.Refresh();
 
-            ReconManager rm = new ReconManager(NewStream, NewNode, Complete, capFile, outDir, this);
+            ReconManager rm = new ReconManager(NewStream, NewNode, Complete, DNS, capFile, outDir, this);
             Thread mThread = new Thread(new ThreadStart(rm.ProcessPcap));
             mThread.IsBackground = true;
             mThread.Start();
@@ -265,10 +274,11 @@ namespace Visual_TCPRecon
         {
              try
             {
-                 
-                lv.Width = this.Width - lv.Left - 20;
-                lv.Columns[0].Width = lv.Width - 10;
+                lvDNS.Left = this.Width - lvDNS.Width - 20;
+                lv.Width = this.Width - lv.Left - 40 - lvDNS.Width  ;
+                
                 lv.Height = this.Height - lv.Top - 40;
+                lvDNS.Height = lv.Height;
                 tv.Top = 75;
                 tv.Height =  lv.Top  - tv.Top - 20  ;
                 tabs.Top = tv.Top;
@@ -280,11 +290,8 @@ namespace Visual_TCPRecon
                 he.Height = tabs.Height - 40;
                 rtf.Height = he.Height;
 
-                /*
-                tabs.Width = this.Width - tabs.Left - 30;
-                he.Width = tabs.Width - 20;
-                rtf.Width = he.Width;
-                */
+                lv.Columns[0].Width = lv.Width - 10;
+                lvDNS.Columns[0].Width = lvDNS.Width - 10;
 
             }catch(Exception ex){}
 
@@ -293,10 +300,12 @@ namespace Visual_TCPRecon
 
         private void lv_SelectedIndexChanged(object sender, EventArgs e)
         {
+            selLV = lv;
             try
             {
                 ListViewItem li = lv.SelectedItems[0];
                 TreeNode n = (TreeNode)li.Tag;
+                tv.CollapseAll();
                 tv.SelectedNode = n;
                 TvNodeClick(n);
                 n.EnsureVisible();
@@ -308,13 +317,15 @@ namespace Visual_TCPRecon
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem li in lv.Items) li.Selected = true;
+            if (selLV == null) return;
+            foreach (ListViewItem li in selLV.Items) li.Selected = true;
         }
 
         private void copySelectedToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (selLV == null) return;
             string tmp = "";
-            foreach (ListViewItem li in lv.SelectedItems)
+            foreach (ListViewItem li in selLV.SelectedItems)
             {
                 tmp += li.Text + "\r\n";
             }
@@ -324,8 +335,9 @@ namespace Visual_TCPRecon
 
         private void copyAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (selLV == null) return;
             string tmp = "";
-            foreach (ListViewItem li in lv.Items)
+            foreach (ListViewItem li in selLV.Items)
             {
                 tmp += li.Text + "\r\n";
             }
@@ -353,6 +365,11 @@ namespace Visual_TCPRecon
             // show a single decimal place, and no space.
             string result = String.Format("{0:0.##} {1}", len, sizes[order]);
             return result;
+        }
+
+        private void lvDNS_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selLV = lvDNS;
         }
 
     }

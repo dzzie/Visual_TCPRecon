@@ -49,6 +49,7 @@
             this.tTextView = new System.Windows.Forms.TabPage();
             this.rtf = new System.Windows.Forms.RichTextBox();
             this.tWebView = new System.Windows.Forms.TabPage();
+            this.wb = new AxSHDocVw.AxWebBrowser();
             this.tImageView = new System.Windows.Forms.TabPage();
             this.pict = new System.Windows.Forms.PictureBox();
             this.lv = new System.Windows.Forms.ListView();
@@ -57,7 +58,8 @@
             this.copySelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wb = new AxSHDocVw.AxWebBrowser();
+            this.lvDNS = new System.Windows.Forms.ListView();
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -65,10 +67,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.he)).BeginInit();
             this.tTextView.SuspendLayout();
             this.tWebView.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.wb)).BeginInit();
             this.tImageView.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pict)).BeginInit();
             this.mnuLvPopup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.wb)).BeginInit();
             this.SuspendLayout();
             // 
             // dlg
@@ -234,6 +236,14 @@
             this.tWebView.Text = "WebView";
             this.tWebView.UseVisualStyleBackColor = true;
             // 
+            // wb
+            // 
+            this.wb.Enabled = true;
+            this.wb.Location = new System.Drawing.Point(9, 10);
+            this.wb.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("wb.OcxState")));
+            this.wb.Size = new System.Drawing.Size(752, 465);
+            this.wb.TabIndex = 0;
+            // 
             // tImageView
             // 
             this.tImageView.Controls.Add(this.pict);
@@ -261,7 +271,7 @@
             this.lv.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lv.Location = new System.Drawing.Point(12, 588);
             this.lv.Name = "lv";
-            this.lv.Size = new System.Drawing.Size(1139, 169);
+            this.lv.Size = new System.Drawing.Size(893, 169);
             this.lv.TabIndex = 10;
             this.lv.UseCompatibleStateImageBehavior = false;
             this.lv.View = System.Windows.Forms.View.Details;
@@ -270,7 +280,7 @@
             // WebRequests
             // 
             this.WebRequests.Text = "WebRequests";
-            this.WebRequests.Width = 1200;
+            this.WebRequests.Width = 800;
             // 
             // mnuLvPopup
             // 
@@ -302,19 +312,31 @@
             this.selectAllToolStripMenuItem.Text = "Select All";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
-            // wb
+            // lvDNS
             // 
-            this.wb.Enabled = true;
-            this.wb.Location = new System.Drawing.Point(9, 10);
-            this.wb.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("wb.OcxState")));
-            this.wb.Size = new System.Drawing.Size(752, 465);
-            this.wb.TabIndex = 0;
+            this.lvDNS.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lvDNS.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.lvDNS.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lvDNS.Location = new System.Drawing.Point(921, 588);
+            this.lvDNS.Name = "lvDNS";
+            this.lvDNS.Size = new System.Drawing.Size(230, 169);
+            this.lvDNS.TabIndex = 11;
+            this.lvDNS.UseCompatibleStateImageBehavior = false;
+            this.lvDNS.View = System.Windows.Forms.View.Details;
+            this.lvDNS.SelectedIndexChanged += new System.EventHandler(this.lvDNS_SelectedIndexChanged);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "DNSRequests";
+            this.columnHeader1.Width = 200;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1158, 761);
+            this.Controls.Add(this.lvDNS);
             this.Controls.Add(this.lv);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.menuStrip1);
@@ -334,10 +356,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.he)).EndInit();
             this.tTextView.ResumeLayout(false);
             this.tWebView.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.wb)).EndInit();
             this.tImageView.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pict)).EndInit();
             this.mnuLvPopup.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.wb)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -373,6 +395,8 @@
         private System.Windows.Forms.TabPage tImageView;
         private System.Windows.Forms.PictureBox pict;
         private AxSHDocVw.AxWebBrowser wb;
+        private System.Windows.Forms.ListView lvDNS;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
     }
 }
 
