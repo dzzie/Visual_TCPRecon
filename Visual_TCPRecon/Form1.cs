@@ -27,7 +27,9 @@ using System.Threading;
  *     hexed.ocx -         https://github.com/dzzie/hexed
  *     managedLibnids.dll  http://www.codeproject.com/KB/IP/TcpRecon/Libnids-119_With_managedLibnids.zip
  *     winpcap             http://www.winpcap.org/
- *  
+ * 
+ * 
+ * todo: conglomerate subnodes by srd/dst ip and dst port, dont care if src port increments. 
  */
 
 namespace Visual_TCPRecon
@@ -38,10 +40,13 @@ namespace Visual_TCPRecon
         static string outDir = "";
         DateTime startTime;
         DataBlock curdb = null;
+        Object blankUrl = "about:blank";
 
         public Form1()
         {
             InitializeComponent();
+            Form1_Resize(null, null);
+            lv.ContextMenuStrip = mnuLvPopup;
         }
 
         #region reconManager callbacks
@@ -62,11 +67,41 @@ namespace Visual_TCPRecon
 
         private void Complete()
         {
-            //remove any top level nodes without children
-            foreach (TreeNode n in tv.Nodes) if (n.Nodes.Count == 0) n.Remove();
+            ListViewItem li = null;
+
+            foreach (TreeNode n in tv.Nodes)
+            {
+                if (n.Nodes.Count == 0)
+                {
+                    n.Remove();//remove any top level nodes without children
+                }
+                else
+                {
+                    n.Text += "  (" + n.Nodes.Count + ")";
+                    foreach (TreeNode nn in n.Nodes)
+                    {
+                        DataBlock db = (DataBlock)nn.Tag;
+                        db.DetectType();
+                        if (db.DataType != DataBlock.DataTypes.dtBinary)
+                        {
+                            nn.Text = db.HttpFirstLine;
+                            if (db.DataType == DataBlock.DataTypes.dtHttpReq)
+                            {
+                                li = lv.Items.Add(db.HttpFirstLine);
+                                li.Tag = nn;
+                            }
+                            else
+                            {//we have some extra display room with just short HTTP response code, so lets use it..
+                                nn.Text += string.Format("   - 0x{0:x} bytes", db.length);
+                                if (db.isGZip) nn.Text += " w/gzip";
+                            }
+                        }
+                    }
+                }
+            }
 
             TimeSpan totalTime = (DateTime.Now - startTime);
-            this.Text = string.Format("Total reconstruct time: {0} seconds", totalTime.TotalSeconds);
+            this.Text = "  Pcap size: " + FileSizeToHumanReadable(txtPcap.Text) + string.Format("      Processing time: {0} seconds", totalTime.TotalSeconds);
 
             //post processing here.. remove ssl?, extract http requests for summary? detect and handle gzip?
 
@@ -75,6 +110,7 @@ namespace Visual_TCPRecon
 
         private void btnBrowsePcap_Click(object sender, EventArgs e)
         {
+            dlg.FileName = System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
             if(dlg.ShowDialog() != DialogResult.OK) return;
             txtPcap.Text = dlg.FileName;
             btnParse_Click(sender, e);
@@ -82,6 +118,11 @@ namespace Visual_TCPRecon
 
         private void btnParse_Click(object sender, EventArgs e)
         {
+
+            string blank = "";
+            tv.Nodes.Clear();
+            he.LoadString(ref blank);
+            lv.Items.Clear();
 
             startTime = DateTime.Now;        
 
@@ -91,11 +132,7 @@ namespace Visual_TCPRecon
                 MessageBox.Show("Pcap file not found: " + txtPcap.Text);
                 return;
             }
-
-            string blank = "";
-            tv.Nodes.Clear();
-            he.LoadString(ref blank);
-
+ 
             string baseName = Path.GetFileNameWithoutExtension(capFile);
             outDir = Directory.GetParent(capFile).FullName;
             outDir += "\\" + baseName;
@@ -114,8 +151,12 @@ namespace Visual_TCPRecon
 
         private void tv_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            TvNodeClick(e.Node);
+        }
+
+        private void TvNodeClick(TreeNode n)
+        {
             TcpRecon tr = null;
-            TreeNode n = e.Node;
             bool viewOnly = true;
 
             if (curdb != null) { curdb.FreeData(); curdb = null; }
@@ -133,9 +174,9 @@ namespace Visual_TCPRecon
                 if (he.LoadedFile != db.recon.dumpFile) he.LoadFile(ref db.recon.dumpFile, ref viewOnly);
                 he.scrollTo(db.startOffset);
                 he.set_SelStart(ref db.startOffset);
-                he.set_SelLength(ref db.length);  
-              
-                if(tabs.SelectedTab.Name == "TextView") rtf.Text = curdb.AsString();
+                he.set_SelLength(ref db.length);
+
+                tabs_SelectedIndexChanged(null, null);
 
 
             }
@@ -193,30 +234,126 @@ namespace Visual_TCPRecon
             MessageBox.Show(string.Format("Extraction Complete {0}/{1} blocks extracted.", i, n.Nodes.Count));
         }
 
-        private void scanForHTTPRequestsToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            
-            MessageBox.Show("todo");
-            return;
-
-            foreach (TreeNode n in tv.Nodes)
-            {
-                foreach (TreeNode nn in n.Nodes)
-                {
-                    //todo
-                }
-            }
-
-        }
-
         private void tabs_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (curdb == null) return;
             //hex tab always loaded
-            if (tabs.SelectedTab.Name == "TextView") rtf.Text = curdb.AsString();
+
+            pict.Image = null;
+            wb.Navigate2(ref blankUrl);
+            string tmp = "";
+
+            if (tabs.SelectedTab.Text == "TextView") rtf.Text = curdb.GetBody();
+            
+            if (tabs.SelectedTab.Text == "ImageView")
+            {
+                tmp = curdb.BinaryBodyToTmpFile();
+                try { pict.Load(tmp); File.Delete(tmp); }
+                catch (Exception ex) { };
+            }
+
+            if (tabs.SelectedTab.Text == "WebView")
+            {
+                Object oTmp = (Object)curdb.BinaryBodyToTmpFile();
+                try { wb.Navigate2(ref oTmp); /*File.Delete((string)oTmp);*/ }
+                catch (Exception ex) { };
+            }
+
         }
 
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+             try
+            {
+                 
+                lv.Width = this.Width - lv.Left - 20;
+                lv.Columns[0].Width = lv.Width - 10;
+                lv.Height = this.Height - lv.Top - 40;
+                tv.Top = 75;
+                tv.Height =  lv.Top  - tv.Top - 20  ;
+                tabs.Top = tv.Top;
 
+                tv.Width = this.Width - tv.Left - tabs.Width - 20;
+                tabs.Left =  tv.Left+ tv.Width  + 10;
+
+                tabs.Height = tv.Height;
+                he.Height = tabs.Height - 40;
+                rtf.Height = he.Height;
+
+                /*
+                tabs.Width = this.Width - tabs.Left - 30;
+                he.Width = tabs.Width - 20;
+                rtf.Width = he.Width;
+                */
+
+            }catch(Exception ex){}
+
+
+        }
+
+        private void lv_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                ListViewItem li = lv.SelectedItems[0];
+                TreeNode n = (TreeNode)li.Tag;
+                tv.SelectedNode = n;
+                TvNodeClick(n);
+                n.EnsureVisible();
+                tabs_SelectedIndexChanged(null, null);
+            }
+            catch (Exception ex) { }
+
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem li in lv.Items) li.Selected = true;
+        }
+
+        private void copySelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tmp = "";
+            foreach (ListViewItem li in lv.SelectedItems)
+            {
+                tmp += li.Text + "\r\n";
+            }
+            Clipboard.Clear();
+            if(tmp.Length > 0) Clipboard.SetText(tmp);
+        }
+
+        private void copyAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tmp = "";
+            foreach (ListViewItem li in lv.Items)
+            {
+                tmp += li.Text + "\r\n";
+            }
+            Clipboard.Clear();
+            if (tmp.Length > 0) Clipboard.SetText(tmp);
+        }
+
+        private void collapseTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tv.CollapseAll();
+        }
+
+        public string FileSizeToHumanReadable(string path)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB" };
+            double len = new FileInfo(path).Length;
+            int order = 0;
+            while (len >= 1024 && order + 1 < sizes.Length)
+            {
+                order++;
+                len = len / 1024;
+            }
+
+            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
+            // show a single decimal place, and no space.
+            string result = String.Format("{0:0.##} {1}", len, sizes[order]);
+            return result;
+        }
 
     }
 }

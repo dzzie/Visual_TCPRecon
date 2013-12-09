@@ -38,23 +38,37 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.collapseTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scanForHTTPRequestsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs = new System.Windows.Forms.TabControl();
-            this.HexView = new System.Windows.Forms.TabPage();
-            this.TextView = new System.Windows.Forms.TabPage();
-            this.WebView = new System.Windows.Forms.TabPage();
+            this.tHexView = new System.Windows.Forms.TabPage();
             this.he = new Axrhexed.AxHexEd();
+            this.tTextView = new System.Windows.Forms.TabPage();
             this.rtf = new System.Windows.Forms.RichTextBox();
-            this.lst = new System.Windows.Forms.ListBox();
+            this.tWebView = new System.Windows.Forms.TabPage();
+            this.tImageView = new System.Windows.Forms.TabPage();
+            this.pict = new System.Windows.Forms.PictureBox();
+            this.lv = new System.Windows.Forms.ListView();
+            this.WebRequests = new System.Windows.Forms.ColumnHeader();
+            this.mnuLvPopup = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copySelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wb = new AxSHDocVw.AxWebBrowser();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
-            this.HexView.SuspendLayout();
-            this.TextView.SuspendLayout();
+            this.tHexView.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.he)).BeginInit();
+            this.tTextView.SuspendLayout();
+            this.tWebView.SuspendLayout();
+            this.tImageView.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pict)).BeginInit();
+            this.mnuLvPopup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.wb)).BeginInit();
             this.SuspendLayout();
             // 
             // dlg
@@ -89,8 +103,9 @@
             // 
             // tv
             // 
-            this.tv.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.tv.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.tv.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tv.HideSelection = false;
             this.tv.Location = new System.Drawing.Point(12, 69);
             this.tv.Name = "tv";
             this.tv.Size = new System.Drawing.Size(357, 512);
@@ -102,9 +117,10 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractStreamsToolStripMenuItem,
-            this.removeStreamToolStripMenuItem});
+            this.removeStreamToolStripMenuItem,
+            this.collapseTreeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(163, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(163, 70);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -120,13 +136,20 @@
             this.removeStreamToolStripMenuItem.Text = "Remove Stream";
             this.removeStreamToolStripMenuItem.Click += new System.EventHandler(this.removeStreamToolStripMenuItem_Click);
             // 
+            // collapseTreeToolStripMenuItem
+            // 
+            this.collapseTreeToolStripMenuItem.Name = "collapseTreeToolStripMenuItem";
+            this.collapseTreeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.collapseTreeToolStripMenuItem.Text = "Collapse Tree";
+            this.collapseTreeToolStripMenuItem.Click += new System.EventHandler(this.collapseTreeToolStripMenuItem_Click);
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1155, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1158, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -141,16 +164,17 @@
             // scanForHTTPRequestsToolStripMenuItem
             // 
             this.scanForHTTPRequestsToolStripMenuItem.Name = "scanForHTTPRequestsToolStripMenuItem";
-            this.scanForHTTPRequestsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
-            this.scanForHTTPRequestsToolStripMenuItem.Text = "Scan For HTTP Requests";
-            this.scanForHTTPRequestsToolStripMenuItem.Click += new System.EventHandler(this.scanForHTTPRequestsToolStripMenuItem_Click_1);
+            this.scanForHTTPRequestsToolStripMenuItem.Size = new System.Drawing.Size(88, 22);
+            this.scanForHTTPRequestsToolStripMenuItem.Text = " ";
             // 
             // tabs
             // 
             this.tabs.Alignment = System.Windows.Forms.TabAlignment.Bottom;
-            this.tabs.Controls.Add(this.HexView);
-            this.tabs.Controls.Add(this.TextView);
-            this.tabs.Controls.Add(this.WebView);
+            this.tabs.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.tabs.Controls.Add(this.tHexView);
+            this.tabs.Controls.Add(this.tTextView);
+            this.tabs.Controls.Add(this.tWebView);
+            this.tabs.Controls.Add(this.tImageView);
             this.tabs.Location = new System.Drawing.Point(375, 69);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
@@ -158,47 +182,36 @@
             this.tabs.TabIndex = 9;
             this.tabs.SelectedIndexChanged += new System.EventHandler(this.tabs_SelectedIndexChanged);
             // 
-            // HexView
+            // tHexView
             // 
-            this.HexView.Controls.Add(this.he);
-            this.HexView.Location = new System.Drawing.Point(4, 4);
-            this.HexView.Name = "HexView";
-            this.HexView.Padding = new System.Windows.Forms.Padding(3);
-            this.HexView.Size = new System.Drawing.Size(772, 486);
-            this.HexView.TabIndex = 0;
-            this.HexView.Text = "HexView";
-            this.HexView.UseVisualStyleBackColor = true;
-            // 
-            // TextView
-            // 
-            this.TextView.Controls.Add(this.rtf);
-            this.TextView.Location = new System.Drawing.Point(4, 4);
-            this.TextView.Name = "TextView";
-            this.TextView.Padding = new System.Windows.Forms.Padding(3);
-            this.TextView.Size = new System.Drawing.Size(772, 486);
-            this.TextView.TabIndex = 1;
-            this.TextView.Text = "TextView";
-            this.TextView.UseVisualStyleBackColor = true;
-            // 
-            // WebView
-            // 
-            this.WebView.Location = new System.Drawing.Point(4, 4);
-            this.WebView.Name = "WebView";
-            this.WebView.Padding = new System.Windows.Forms.Padding(3);
-            this.WebView.Size = new System.Drawing.Size(772, 486);
-            this.WebView.TabIndex = 2;
-            this.WebView.Text = "WebView";
-            this.WebView.UseVisualStyleBackColor = true;
+            this.tHexView.Controls.Add(this.he);
+            this.tHexView.Location = new System.Drawing.Point(4, 4);
+            this.tHexView.Name = "tHexView";
+            this.tHexView.Padding = new System.Windows.Forms.Padding(3);
+            this.tHexView.Size = new System.Drawing.Size(772, 486);
+            this.tHexView.TabIndex = 0;
+            this.tHexView.Text = "HexView";
+            this.tHexView.UseVisualStyleBackColor = true;
             // 
             // he
             // 
-            this.he.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.he.Enabled = true;
             this.he.Location = new System.Drawing.Point(3, 9);
             this.he.Name = "he";
             this.he.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("he.OcxState")));
             this.he.Size = new System.Drawing.Size(766, 471);
             this.he.TabIndex = 8;
+            // 
+            // tTextView
+            // 
+            this.tTextView.Controls.Add(this.rtf);
+            this.tTextView.Location = new System.Drawing.Point(4, 4);
+            this.tTextView.Name = "tTextView";
+            this.tTextView.Padding = new System.Windows.Forms.Padding(3);
+            this.tTextView.Size = new System.Drawing.Size(772, 486);
+            this.tTextView.TabIndex = 1;
+            this.tTextView.Text = "TextView";
+            this.tTextView.UseVisualStyleBackColor = true;
             // 
             // rtf
             // 
@@ -210,22 +223,99 @@
             this.rtf.TabIndex = 0;
             this.rtf.Text = "";
             // 
-            // lst
+            // tWebView
             // 
-            this.lst.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lst.FormattingEnabled = true;
-            this.lst.ItemHeight = 17;
-            this.lst.Location = new System.Drawing.Point(12, 587);
-            this.lst.Name = "lst";
-            this.lst.Size = new System.Drawing.Size(1139, 106);
-            this.lst.TabIndex = 10;
+            this.tWebView.Controls.Add(this.wb);
+            this.tWebView.Location = new System.Drawing.Point(4, 4);
+            this.tWebView.Name = "tWebView";
+            this.tWebView.Padding = new System.Windows.Forms.Padding(3);
+            this.tWebView.Size = new System.Drawing.Size(772, 486);
+            this.tWebView.TabIndex = 2;
+            this.tWebView.Text = "WebView";
+            this.tWebView.UseVisualStyleBackColor = true;
+            // 
+            // tImageView
+            // 
+            this.tImageView.Controls.Add(this.pict);
+            this.tImageView.Location = new System.Drawing.Point(4, 4);
+            this.tImageView.Name = "tImageView";
+            this.tImageView.Padding = new System.Windows.Forms.Padding(3);
+            this.tImageView.Size = new System.Drawing.Size(772, 486);
+            this.tImageView.TabIndex = 3;
+            this.tImageView.Text = "ImageView";
+            this.tImageView.UseVisualStyleBackColor = true;
+            // 
+            // pict
+            // 
+            this.pict.Location = new System.Drawing.Point(8, 11);
+            this.pict.Name = "pict";
+            this.pict.Size = new System.Drawing.Size(754, 463);
+            this.pict.TabIndex = 0;
+            this.pict.TabStop = false;
+            // 
+            // lv
+            // 
+            this.lv.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lv.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.WebRequests});
+            this.lv.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lv.Location = new System.Drawing.Point(12, 588);
+            this.lv.Name = "lv";
+            this.lv.Size = new System.Drawing.Size(1139, 169);
+            this.lv.TabIndex = 10;
+            this.lv.UseCompatibleStateImageBehavior = false;
+            this.lv.View = System.Windows.Forms.View.Details;
+            this.lv.SelectedIndexChanged += new System.EventHandler(this.lv_SelectedIndexChanged);
+            // 
+            // WebRequests
+            // 
+            this.WebRequests.Text = "WebRequests";
+            this.WebRequests.Width = 1200;
+            // 
+            // mnuLvPopup
+            // 
+            this.mnuLvPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copySelectedToolStripMenuItem,
+            this.copyAllToolStripMenuItem,
+            this.selectAllToolStripMenuItem});
+            this.mnuLvPopup.Name = "mnuLvPopup";
+            this.mnuLvPopup.Size = new System.Drawing.Size(155, 70);
+            // 
+            // copySelectedToolStripMenuItem
+            // 
+            this.copySelectedToolStripMenuItem.Name = "copySelectedToolStripMenuItem";
+            this.copySelectedToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.copySelectedToolStripMenuItem.Text = "Copy Selected";
+            this.copySelectedToolStripMenuItem.Click += new System.EventHandler(this.copySelectedToolStripMenuItem_Click);
+            // 
+            // copyAllToolStripMenuItem
+            // 
+            this.copyAllToolStripMenuItem.Name = "copyAllToolStripMenuItem";
+            this.copyAllToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.copyAllToolStripMenuItem.Text = "Copy All";
+            this.copyAllToolStripMenuItem.Click += new System.EventHandler(this.copyAllToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.selectAllToolStripMenuItem.Text = "Select All";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            // 
+            // wb
+            // 
+            this.wb.Enabled = true;
+            this.wb.Location = new System.Drawing.Point(9, 10);
+            this.wb.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("wb.OcxState")));
+            this.wb.Size = new System.Drawing.Size(752, 465);
+            this.wb.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1155, 706);
-            this.Controls.Add(this.lst);
+            this.ClientSize = new System.Drawing.Size(1158, 761);
+            this.Controls.Add(this.lv);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.tv);
@@ -235,13 +325,19 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabs.ResumeLayout(false);
-            this.HexView.ResumeLayout(false);
-            this.TextView.ResumeLayout(false);
+            this.tHexView.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.he)).EndInit();
+            this.tTextView.ResumeLayout(false);
+            this.tWebView.ResumeLayout(false);
+            this.tImageView.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pict)).EndInit();
+            this.mnuLvPopup.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.wb)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -262,12 +358,21 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scanForHTTPRequestsToolStripMenuItem;
         private System.Windows.Forms.TabControl tabs;
-        private System.Windows.Forms.TabPage HexView;
-        private System.Windows.Forms.TabPage TextView;
+        private System.Windows.Forms.TabPage tHexView;
+        private System.Windows.Forms.TabPage tTextView;
         private Axrhexed.AxHexEd he;
         private System.Windows.Forms.RichTextBox rtf;
-        private System.Windows.Forms.TabPage WebView;
-        private System.Windows.Forms.ListBox lst;
+        private System.Windows.Forms.TabPage tWebView;
+        private System.Windows.Forms.ListView lv;
+        private System.Windows.Forms.ColumnHeader WebRequests;
+        private System.Windows.Forms.ContextMenuStrip mnuLvPopup;
+        private System.Windows.Forms.ToolStripMenuItem copySelectedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem collapseTreeToolStripMenuItem;
+        private System.Windows.Forms.TabPage tImageView;
+        private System.Windows.Forms.PictureBox pict;
+        private AxSHDocVw.AxWebBrowser wb;
     }
 }
 
