@@ -60,6 +60,11 @@
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvDNS = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.selectLikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.invertSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -106,6 +111,7 @@
             // tv
             // 
             this.tv.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.tv.CheckBoxes = true;
             this.tv.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tv.HideSelection = false;
             this.tv.Location = new System.Drawing.Point(12, 69);
@@ -120,28 +126,33 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractStreamsToolStripMenuItem,
             this.removeStreamToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.selectLikeToolStripMenuItem,
+            this.invertSelectionToolStripMenuItem,
+            this.clearSelectionToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.collapseTreeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(163, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 148);
             // 
             // extractStreamsToolStripMenuItem
             // 
             this.extractStreamsToolStripMenuItem.Name = "extractStreamsToolStripMenuItem";
-            this.extractStreamsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.extractStreamsToolStripMenuItem.Text = "Extract Streams";
+            this.extractStreamsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.extractStreamsToolStripMenuItem.Text = "Extract Selected Data Blocks";
             this.extractStreamsToolStripMenuItem.Click += new System.EventHandler(this.extractStreamsToolStripMenuItem_Click);
             // 
             // removeStreamToolStripMenuItem
             // 
             this.removeStreamToolStripMenuItem.Name = "removeStreamToolStripMenuItem";
-            this.removeStreamToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.removeStreamToolStripMenuItem.Text = "Remove Stream";
+            this.removeStreamToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.removeStreamToolStripMenuItem.Text = "Remove Selected Streams";
             this.removeStreamToolStripMenuItem.Click += new System.EventHandler(this.removeStreamToolStripMenuItem_Click);
             // 
             // collapseTreeToolStripMenuItem
             // 
             this.collapseTreeToolStripMenuItem.Name = "collapseTreeToolStripMenuItem";
-            this.collapseTreeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.collapseTreeToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.collapseTreeToolStripMenuItem.Text = "Collapse Tree";
             this.collapseTreeToolStripMenuItem.Click += new System.EventHandler(this.collapseTreeToolStripMenuItem_Click);
             // 
@@ -269,7 +280,7 @@
             this.lv.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.WebRequests});
             this.lv.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lv.Location = new System.Drawing.Point(12, 588);
+            this.lv.Location = new System.Drawing.Point(12, 587);
             this.lv.Name = "lv";
             this.lv.Size = new System.Drawing.Size(893, 169);
             this.lv.TabIndex = 10;
@@ -279,7 +290,7 @@
             // 
             // WebRequests
             // 
-            this.WebRequests.Text = "WebRequests";
+            this.WebRequests.Text = "Web Requests";
             this.WebRequests.Width = 800;
             // 
             // mnuLvPopup
@@ -331,15 +342,46 @@
             this.columnHeader1.Text = "DNSRequests";
             this.columnHeader1.Width = 200;
             // 
+            // selectLikeToolStripMenuItem
+            // 
+            this.selectLikeToolStripMenuItem.Name = "selectLikeToolStripMenuItem";
+            this.selectLikeToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.selectLikeToolStripMenuItem.Text = "Select Like";
+            this.selectLikeToolStripMenuItem.Click += new System.EventHandler(this.selectLikeToolStripMenuItem_Click_1);
+            // 
+            // invertSelectionToolStripMenuItem
+            // 
+            this.invertSelectionToolStripMenuItem.Name = "invertSelectionToolStripMenuItem";
+            this.invertSelectionToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.invertSelectionToolStripMenuItem.Text = "Invert Selection";
+            this.invertSelectionToolStripMenuItem.Click += new System.EventHandler(this.invertSelectionToolStripMenuItem_Click);
+            // 
+            // clearSelectionToolStripMenuItem
+            // 
+            this.clearSelectionToolStripMenuItem.Name = "clearSelectionToolStripMenuItem";
+            this.clearSelectionToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.clearSelectionToolStripMenuItem.Text = "Clear Selection";
+            this.clearSelectionToolStripMenuItem.Click += new System.EventHandler(this.clearSelectionToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(219, 6);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(219, 6);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1158, 761);
             this.Controls.Add(this.lvDNS);
-            this.Controls.Add(this.lv);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.lv);
             this.Controls.Add(this.tv);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnBrowsePcap);
@@ -397,6 +439,11 @@
         private AxSHDocVw.AxWebBrowser wb;
         private System.Windows.Forms.ListView lvDNS;
         private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ToolStripMenuItem selectLikeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem invertSelectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearSelectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

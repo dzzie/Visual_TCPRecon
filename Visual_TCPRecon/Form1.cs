@@ -11,7 +11,7 @@ using Tamir.IPLib;
 using System.IO;
 using VTcpRecon;
 using System.Threading;
-
+using Microsoft.VisualBasic;
 /*
  *  This code was modified by dzzie@yahoo.com from the base at:
  *  
@@ -102,10 +102,10 @@ namespace Visual_TCPRecon
                 }
             }
 
+            lvDNS.Columns[0].Text = "DNS Requests: " + lvDNS.Items.Count;
+            lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
             TimeSpan totalTime = (DateTime.Now - startTime);
             this.Text = "  Pcap size: " + FileSizeToHumanReadable(txtPcap.Text) + string.Format("      Processing time: {0} seconds", totalTime.TotalSeconds);
-
-            //post processing here.. remove ssl?, extract http requests for summary? detect and handle gzip?
 
         }
 
@@ -115,6 +115,14 @@ namespace Visual_TCPRecon
         }
 
         #endregion
+
+        public static string InputBox(string msg){  return InputBox(msg, "", ""); }
+        public static string InputBox(string msg, string title, string defaultVal)
+        {
+            string tmp = Interaction.InputBox(msg, title, defaultVal, -1, -1);
+            if (tmp == null) tmp = "";
+            return tmp;
+        }
 
         private void btnBrowsePcap_Click(object sender, EventArgs e)
         {
@@ -208,39 +216,74 @@ namespace Visual_TCPRecon
 
         private void removeStreamToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TreeNode n = tv.SelectedNode;
-            if (n != null) n.Remove();
+            for( int ndx = tv.Nodes.Count; ndx > 0; ndx--)
+            {
+              TreeNode node = tv.Nodes[ndx-1];
+              if (node.Checked)
+              {
+                  foreach (TreeNode nn in node.Nodes)
+                  {
+                      foreach (ListViewItem li in lv.Items)
+                      {
+                          TreeNode n = (TreeNode)li.Tag;
+                          if (n == nn)
+                          {
+                              lv.Items.Remove(li);
+                              break;
+                          }
+                      }
+                  }
+                  tv.Nodes.Remove(node);
+              }
+            }
+            lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
         }
 
         private void extractStreamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TreeNode n = tv.SelectedNode;
-            if (n == null) return;
 
             fDlg.SelectedPath = outDir;
             if(fDlg.ShowDialog() != DialogResult.OK) return;
 
             string pDir = fDlg.SelectedPath + "\\";
             
-            if (n.Nodes.Count == 0)
+            int i = 0,j=0;
+            foreach (TreeNode n in tv.Nodes)
             {
-                MessageBox.Show("Not a parent node shouldnt happen");
-                return;
-            }
-
-            int i = 0;
-            foreach (TreeNode nn in n.Nodes)
-            {
-                DataBlock db = (DataBlock)nn.Tag;
-                if ( db.LoadData() )
+                if (n.Checked) //parent stream node, extract all its children
                 {
-                    db.SaveToFile(pDir + i + ".bin");
-                    db.FreeData();
+                    foreach (TreeNode nn in n.Nodes)
+                    {
+                        DataBlock db = (DataBlock)nn.Tag;
+                        if (db.LoadData())
+                        {
+                            db.SaveToFile(pDir + n.Text+ "_" + i + ".bin");
+                            db.FreeData();
+                            j++;
+                        }
+                        i++;
+                    }
                 }
-                i++;
+                else //scan its subnodes to see if any of them are selected..
+                {
+                    foreach (TreeNode nn in n.Nodes)
+                    {
+                        if (nn.Checked)
+                        {
+                            DataBlock db = (DataBlock)nn.Tag;
+                            if (db.LoadData())
+                            {
+                                db.SaveToFile(pDir + n.Text + "_" + i + ".bin");
+                                db.FreeData();
+                                j++;
+                            }
+                            i++;
+                        }
+                    }
+                }
             }
 
-            MessageBox.Show(string.Format("Extraction Complete {0}/{1} blocks extracted.", i, n.Nodes.Count));
+            MessageBox.Show(string.Format("Extraction Complete {0}/{1} blocks extracted.", j, i));
         }
 
         private void tabs_SelectedIndexChanged(object sender, EventArgs e)
@@ -361,8 +404,6 @@ namespace Visual_TCPRecon
                 len = len / 1024;
             }
 
-            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
-            // show a single decimal place, and no space.
             string result = String.Format("{0:0.##} {1}", len, sizes[order]);
             return result;
         }
@@ -370,6 +411,26 @@ namespace Visual_TCPRecon
         private void lvDNS_SelectedIndexChanged(object sender, EventArgs e)
         {
             selLV = lvDNS;
+        }
+
+        private void selectLikeToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            string match = InputBox("Enter IP or port to select");
+            if (match.Length == 0) return;
+            foreach (TreeNode n in tv.Nodes)
+            {
+                n.Checked = (n.Text.IndexOf(match, StringComparison.CurrentCultureIgnoreCase) != -1); 
+            }
+        }
+
+        private void invertSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes) n.Checked = !n.Checked;
+        }
+
+        private void clearSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes) n.Checked = false;
         }
 
     }
