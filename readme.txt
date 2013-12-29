@@ -1,7 +1,7 @@
 
 This is a visual tcp reconstruction tool for pcaps.
 
-Load a pcap, it will parse it into communicaiton streams
+Load a pcap, it will parse it into communication streams
 each host:port pair gets it own node. Under this node each
 leg of the communication will get its own sub node. 
 
@@ -11,10 +11,15 @@ communication can be highlighted or extracted by clicking on a sub node.
 Its handy for looking at binary communication protocols, and has some
 extra tools for web requests.
 
+it also auto extracts all:
+   dns requests
+   unique ip addresses
+   http web requests
+
 the hexed.ocx control will have to be registered on your system using the following 
 command:
 
-regsvr hexed.ocx
+regsvr32 hexed.ocx
 
 Another project i stumbled across while looking for dns parsing code 
 is Network Miner. Its open source and written in C#. Looks like its worth

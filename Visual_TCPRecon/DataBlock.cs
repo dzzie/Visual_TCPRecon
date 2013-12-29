@@ -136,20 +136,26 @@ namespace Visual_TCPRecon
             int HttpHeaderEnd = 0;
             StringComparison sc = StringComparison.CurrentCultureIgnoreCase;
 
-            for (int i = 0; i < data.Length; i++)
+            //bugfix: bitconverter can try to read past end of array..but we need to read to .length to catch all..
+            for (Int32 i = 0; i < data.Length; i++)
             {
                 if (data[i] == 0) goto cleanup; //binary not a http header
-                
-                if(firstNL==0 && BitConverter.ToInt16(data, i)== 0x0A0D) firstNL = i;
-                
-                if (BitConverter.ToInt32(data, i) == 0x0A0D0A0D)
-                {
-                    HttpHeaderEnd = i;
-                    if (i + 4 < data.Length) HttpHeaderEnd += 4;
-                    break;
-                }
-            }
 
+                try
+                {
+                    if (firstNL == 0 && BitConverter.ToInt16(data, i) == 0x0A0D) firstNL = i;
+
+                    if (BitConverter.ToInt32(data, i) == 0x0A0D0A0D)
+                    {
+                        HttpHeaderEnd = i;
+                        if (i + 4 < data.Length) HttpHeaderEnd += 4;
+                        break;
+                    }
+                }
+                catch (Exception ex) { /*whatever*/ }
+                 
+            }
+             
             if (HttpHeaderEnd > 0)
             {
                 string firstLine = AsString(0,firstNL);

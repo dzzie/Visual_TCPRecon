@@ -49,6 +49,7 @@ namespace Visual_TCPRecon
             Form1_Resize(null, null);
             lv.ContextMenuStrip = mnuLvPopup;
             lvDNS.ContextMenuStrip = mnuLvPopup;
+            lvIPs.ContextMenuStrip = mnuLvPopup;
         }
 
         #region reconManager callbacks
@@ -67,15 +68,18 @@ namespace Visual_TCPRecon
             nn.Tag = db;
         }
 
-        private void Complete()
+        private void Complete(List<string> ips)
         {
             ListViewItem li = null;
+            List<TreeNode> rem = new List<TreeNode>();
+
+            foreach (string s in ips) lvIPs.Items.Add(s);
 
             foreach (TreeNode n in tv.Nodes)
             {
                 if (n.Nodes.Count == 0)
                 {
-                    n.Remove();//remove any top level nodes without children
+                    rem.Add(n);
                 }
                 else
                 {
@@ -98,10 +102,13 @@ namespace Visual_TCPRecon
                                 if (db.isGZip) nn.Text += " w/gzip";
                             }
                         }
+
                     }
                 }
             }
-
+            
+            foreach (TreeNode n in rem) tv.Nodes.Remove(n);
+             
             lvDNS.Columns[0].Text = "DNS Requests: " + lvDNS.Items.Count;
             lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
             TimeSpan totalTime = (DateTime.Now - startTime);
@@ -207,7 +214,7 @@ namespace Visual_TCPRecon
                 // Select the clicked node
                 tv.SelectedNode = tv.GetNodeAt(e.X, e.Y);
 
-                if (tv.SelectedNode != null && tv.SelectedNode.Nodes.Count > 0)
+                if (tv.SelectedNode != null /*&& tv.SelectedNode.Nodes.Count > 0*/)
                 {
                     contextMenuStrip1.Show(tv, e.Location);
                 }
@@ -317,11 +324,12 @@ namespace Visual_TCPRecon
         {
              try
             {
-                lvDNS.Left = this.Width - lvDNS.Width - 20;
-                lv.Width = this.Width - lv.Left - 40 - lvDNS.Width  ;
+                //lvDNS.Left = this.Width - lvDNS.Width - 20;
+                lv.Width = this.Width - lv.Left - 20; // -lvDNS.Width;
                 
                 lv.Height = this.Height - lv.Top - 40;
                 lvDNS.Height = lv.Height;
+                lvIPs.Height = lv.Height;
                 tv.Top = 75;
                 tv.Height =  lv.Top  - tv.Top - 20  ;
                 tabs.Top = tv.Top;
@@ -413,6 +421,11 @@ namespace Visual_TCPRecon
             selLV = lvDNS;
         }
 
+        private void lvIPs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selLV = lvIPs;
+        }
+
         private void selectLikeToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             string match = InputBox("Enter IP or port to select");
@@ -432,6 +445,30 @@ namespace Visual_TCPRecon
         {
             foreach (TreeNode n in tv.Nodes) n.Checked = false;
         }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void mnuCopyTable_Click(object sender, EventArgs e)
+        {
+            StringBuilder tmp = new StringBuilder("\r\n");
+
+            foreach (TreeNode n in tv.Nodes)
+            {
+                tmp.Append(n.Text + "\r\n");
+                foreach (TreeNode nn in n.Nodes)
+                {
+                    tmp.Append("\t"+ nn.Text + "\r\n");
+                }
+                tmp.Append("\r\n");
+            }
+            Clipboard.Clear();
+            Clipboard.SetText(tmp.ToString());
+        }
+
+        
 
     }
 }

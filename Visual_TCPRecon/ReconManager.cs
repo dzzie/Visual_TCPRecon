@@ -20,13 +20,14 @@ namespace Visual_TCPRecon
         static string outDir = "";
         static string capFile = "";
         private Form1 owner;
+        private List<string> ips = new List<string>(); //all ip's seen
 
         static Dictionary<Connection, TcpRecon> sharpPcapDict = new Dictionary<Connection, TcpRecon>();
 
         public delegate void _NewStream(TcpRecon recon);
         public delegate void _NewNode(DataBlock db);
         public delegate void _DNS(cDNS dns);
-        public delegate void _Complete();
+        public delegate void _Complete(List<string> ips);
 
         public _NewStream NewStream = null;
         public _NewNode NewNode = null;
@@ -44,6 +45,12 @@ namespace Visual_TCPRecon
             owner = parent;
         }
 
+        private bool IPExists(string ip)
+        {
+            foreach (string s in ips) if (s == ip) return true;
+            return false;
+        }
+
         private void AddNewNode(TcpRecon recon)
         {
             int startAt = (int)recon.LastSavedOffset;
@@ -51,7 +58,7 @@ namespace Visual_TCPRecon
             if (recon.isComplete) endAt =(int)recon.CurrentOffset;
 
             DataBlock db = new DataBlock(recon.dumpFile, startAt, endAt - startAt, recon);
-            owner.Invoke(NewNode, db);
+            owner.Invoke(NewNode, db); 
 
             recon.LastSavedOffset = recon.PreviousPacketEndOffset;
         }
@@ -60,12 +67,15 @@ namespace Visual_TCPRecon
         {
             //right now we are only passing up dns requests where we were able to extract the name
             UDPPacket udp = (UDPPacket)packet;
+            if (!IPExists("udp: "+udp.DestinationAddress)) ips.Add("udp: "+udp.DestinationAddress);
+            if (!IPExists("udp: "+udp.SourceAddress)) ips.Add("udp: "+udp.SourceAddress);
+
             if (udp.DestinationPort == 53) //its a request
             {
                 cDNS dns = new cDNS(udp.UDPData);
                 if (!dns.isResponse && dns.dnsName.Length > 0)
                 {
-                    owner.Invoke(DNS, dns);
+                    owner.Invoke(DNS, dns); 
                 }
             }
 
@@ -92,7 +102,9 @@ namespace Visual_TCPRecon
                 recon = new TcpRecon(c.fileName);
                 recon.LastSourcePort = tcpPacket.SourcePort;
                 sharpPcapDict.Add(c, recon);
-                owner.Invoke(NewStream,recon);
+                if (!IPExists("tcp: " + tcpPacket.DestinationAddress)) ips.Add("tcp: " + tcpPacket.DestinationAddress);
+                if (!IPExists("tcp: " + tcpPacket.SourceAddress)) ips.Add("tcp: " + tcpPacket.SourceAddress);
+                owner.Invoke(NewStream, recon); 
             }else{
                 recon = sharpPcapDict[c];
             }
@@ -124,7 +136,7 @@ namespace Visual_TCPRecon
             catch (Exception ex)
             {
                 ErrorMessage = "Error Loading pcap with SharpPcap: " + ex.Message;
-                return;// false;
+                return; 
             }
 
             device.PcapOnPacketArrival += new SharpPcap.PacketArrivalEvent(device_PcapOnPacketArrival);
@@ -139,8 +151,9 @@ namespace Visual_TCPRecon
             }
 
             sharpPcapDict.Clear();
-            owner.Invoke(Complete);
-            return;// true;
+            owner.Invoke(Complete, ips);
+             
+            return; 
 
         }
     }
