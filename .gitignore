@@ -17,5 +17,5 @@
 */_*
 *.bat
 *test.exe
-
+*vshost.exe*
 
