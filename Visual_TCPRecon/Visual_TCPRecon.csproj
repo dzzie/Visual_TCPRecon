@@ -68,6 +68,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IScript.cs" />
+    <Compile Include="Interfaces\IScriptableComponent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -92,6 +94,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ReconManager.cs" />
+    <Compile Include="scriptHelper.cs" />
     <Compile Include="TcpRecon.cs" />
   </ItemGroup>
   <ItemGroup>

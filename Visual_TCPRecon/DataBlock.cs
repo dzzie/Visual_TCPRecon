@@ -241,6 +241,25 @@ namespace Visual_TCPRecon
 
         }
 
+        public bool AppendToFile(string path)
+        {
+            if (data == null) return false;
+
+            if (!File.Exists(path)) return SaveToFile(path);
+
+            try
+            {
+                using (BinaryWriter bw = new BinaryWriter(File.Open(path, FileMode.Append)))
+                {
+                    bw.Write(data);
+                    bw.Close();
+                }
+                return true;
+            }
+            catch (Exception e) { return false; }
+
+        }
+
         public bool LoadData()
         {
 

@@ -38,16 +38,19 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeUncheckedStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.selectLikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.invertSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.collapseTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.expandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuCopyTable = new System.Windows.Forms.ToolStripMenuItem();
+            this.runScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tHexView = new System.Windows.Forms.TabPage();
             this.he = new Axrhexed.AxHexEd();
@@ -67,6 +70,7 @@
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.lvIPs = new System.Windows.Forms.ListView();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.saveDlg = new System.Windows.Forms.SaveFileDialog();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -121,6 +125,7 @@
             this.tv.Size = new System.Drawing.Size(377, 512);
             this.tv.TabIndex = 6;
             this.tv.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tv_MouseUp);
+            this.tv.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tv_AfterSelect);
             this.tv.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tv_NodeMouseClick);
             // 
             // contextMenuStrip1
@@ -128,14 +133,16 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractStreamsToolStripMenuItem,
             this.removeStreamToolStripMenuItem,
+            this.removeUncheckedStreamsToolStripMenuItem,
             this.toolStripMenuItem2,
             this.selectLikeToolStripMenuItem,
             this.invertSelectionToolStripMenuItem,
             this.clearSelectionToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.collapseTreeToolStripMenuItem});
+            this.collapseTreeToolStripMenuItem,
+            this.expandAllToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 148);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 192);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -150,6 +157,12 @@
             this.removeStreamToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.removeStreamToolStripMenuItem.Text = "Remove Checked Streams";
             this.removeStreamToolStripMenuItem.Click += new System.EventHandler(this.removeStreamToolStripMenuItem_Click);
+            // 
+            // removeUncheckedStreamsToolStripMenuItem
+            // 
+            this.removeUncheckedStreamsToolStripMenuItem.Name = "removeUncheckedStreamsToolStripMenuItem";
+            this.removeUncheckedStreamsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.removeUncheckedStreamsToolStripMenuItem.Text = "Remove Unchecked Streams";
             // 
             // toolStripMenuItem2
             // 
@@ -189,6 +202,13 @@
             this.collapseTreeToolStripMenuItem.Text = "Collapse Tree";
             this.collapseTreeToolStripMenuItem.Click += new System.EventHandler(this.collapseTreeToolStripMenuItem_Click);
             // 
+            // expandAllToolStripMenuItem
+            // 
+            this.expandAllToolStripMenuItem.Name = "expandAllToolStripMenuItem";
+            this.expandAllToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.expandAllToolStripMenuItem.Text = "Expand all";
+            this.expandAllToolStripMenuItem.Click += new System.EventHandler(this.expandAllToolStripMenuItem_Click);
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -203,7 +223,8 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuCopyTable});
+            this.mnuCopyTable,
+            this.runScriptToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -211,9 +232,16 @@
             // mnuCopyTable
             // 
             this.mnuCopyTable.Name = "mnuCopyTable";
-            this.mnuCopyTable.Size = new System.Drawing.Size(152, 22);
+            this.mnuCopyTable.Size = new System.Drawing.Size(139, 22);
             this.mnuCopyTable.Text = "Copy Table";
             this.mnuCopyTable.Click += new System.EventHandler(this.mnuCopyTable_Click);
+            // 
+            // runScriptToolStripMenuItem
+            // 
+            this.runScriptToolStripMenuItem.Name = "runScriptToolStripMenuItem";
+            this.runScriptToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.runScriptToolStripMenuItem.Text = "Run Script";
+            this.runScriptToolStripMenuItem.Click += new System.EventHandler(this.runScriptToolStripMenuItem_Click);
             // 
             // tabs
             // 
@@ -413,6 +441,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
@@ -433,15 +462,15 @@
 
         #endregion
 
-        private System.Windows.Forms.OpenFileDialog dlg;
+        public System.Windows.Forms.OpenFileDialog dlg;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtPcap;
+        public System.Windows.Forms.TextBox txtPcap;
         private System.Windows.Forms.Button btnBrowsePcap;
-        private System.Windows.Forms.TreeView tv;
+        public System.Windows.Forms.TreeView tv;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem extractStreamsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeStreamToolStripMenuItem;
-        private System.Windows.Forms.FolderBrowserDialog fDlg;
+        public System.Windows.Forms.FolderBrowserDialog fDlg;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mnuCopyTable;
@@ -451,7 +480,7 @@
         private Axrhexed.AxHexEd he;
         private System.Windows.Forms.RichTextBox rtf;
         private System.Windows.Forms.TabPage tWebView;
-        private System.Windows.Forms.ListView lv;
+        public System.Windows.Forms.ListView lv;
         private System.Windows.Forms.ColumnHeader WebRequests;
         private System.Windows.Forms.ContextMenuStrip mnuLvPopup;
         private System.Windows.Forms.ToolStripMenuItem copySelectedToolStripMenuItem;
@@ -461,15 +490,19 @@
         private System.Windows.Forms.TabPage tImageView;
         private System.Windows.Forms.PictureBox pict;
         private AxSHDocVw.AxWebBrowser wb;
-        private System.Windows.Forms.ListView lvDNS;
+        public System.Windows.Forms.ListView lvDNS;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ToolStripMenuItem selectLikeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem invertSelectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearSelectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ListView lvIPs;
+        public System.Windows.Forms.ListView lvIPs;
         private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ToolStripMenuItem expandAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runScriptToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeUncheckedStreamsToolStripMenuItem;
+        public System.Windows.Forms.SaveFileDialog saveDlg;
     }
 }
 

@@ -12,6 +12,8 @@ using System.IO;
 using VTcpRecon;
 using System.Threading;
 using Microsoft.VisualBasic;
+using Visual_TCPRecon.Interfaces;
+
 /*
  *  This code was modified by dzzie@yahoo.com from the base at:
  *  
@@ -39,7 +41,7 @@ namespace Visual_TCPRecon
     {
         static string outDir = "";
         DateTime startTime;
-        DataBlock curdb = null;
+        public DataBlock curdb = null;
         Object blankUrl = "about:blank";
         ListView selLV;
 
@@ -182,9 +184,9 @@ namespace Visual_TCPRecon
         {
             TcpRecon tr = null;
             bool viewOnly = true;
-
+           
             if (curdb != null) { curdb.FreeData(); curdb = null; }
-
+            
             if (n.Tag is TcpRecon) 
             {
                 tr = (TcpRecon)n.Tag;
@@ -432,18 +434,27 @@ namespace Visual_TCPRecon
             if (match.Length == 0) return;
             foreach (TreeNode n in tv.Nodes)
             {
-                n.Checked = (n.Text.IndexOf(match, StringComparison.CurrentCultureIgnoreCase) != -1); 
+                n.Checked = (n.Text.IndexOf(match, StringComparison.CurrentCultureIgnoreCase) != -1);
+                foreach (TreeNode nn in n.Nodes) nn.Checked = (nn.Text.IndexOf(match, StringComparison.CurrentCultureIgnoreCase) != -1); 
             }
         }
 
         private void invertSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (TreeNode n in tv.Nodes) n.Checked = !n.Checked;
+            foreach (TreeNode n in tv.Nodes)
+            {
+                n.Checked = !n.Checked;
+                foreach (TreeNode nn in n.Nodes) nn.Checked = !nn.Checked;
+            }
         }
 
         private void clearSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (TreeNode n in tv.Nodes) n.Checked = false;
+            foreach (TreeNode n in tv.Nodes)
+            {
+                n.Checked = false;
+                foreach (TreeNode nn in n.Nodes) nn.Checked = false;
+            }
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -454,7 +465,7 @@ namespace Visual_TCPRecon
         private void mnuCopyTable_Click(object sender, EventArgs e)
         {
             StringBuilder tmp = new StringBuilder("\r\n");
-
+            
             foreach (TreeNode n in tv.Nodes)
             {
                 tmp.Append(n.Text + "\r\n");
@@ -468,7 +479,90 @@ namespace Visual_TCPRecon
             Clipboard.SetText(tmp.ToString());
         }
 
+        private void expandAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes) n.Expand();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void runScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // This is exposed to the scripts
+            IScriptableComponent component = new DummyComponent();
+            component.Parent = this;
+
+            //var compiledAssemblyPath = Path.Combine(Environment.CurrentDirectory, ScriptsDirectory, CompiledScriptsAssemblyName);
+            //var scriptFiles = Directory.EnumerateFiles(ScriptsDirectory, "*.cs", SearchOption.AllDirectories).ToArray();
+
+            dlg.Filter = "CSharp Script files (*.cs)|*.cs";
+            dlg.FileName = "";// System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
+
+            var scriptDir = Application.StartupPath;
+            if (Directory.Exists(scriptDir + "\\visual_tcprecon")) scriptDir = scriptDir + "\\visual_tcprecon\\";
+            if (Directory.Exists(scriptDir + "\\Scripts")) scriptDir = scriptDir + "\\scripts\\";
+
+            dlg.InitialDirectory = scriptDir;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            System.Reflection.Assembly scriptAssembly;
+            try
+            {
+                scriptAssembly = Helper.CompileAssembly(dlg.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error compiling script: " + ex.Message);
+                return;
+            }
+
+            try
+            {
+                // Find all types that implement the IScript interface in the compiled assembly
+                var scriptTypes = Helper.GetTypesImplementingInterface(scriptAssembly, typeof(IScript));
+
+                foreach (var scriptType in scriptTypes)
+                {
+                    // Creates instances of type and pass component to the constructor
+                    var script = (IScript)Activator.CreateInstance(scriptType);
+                    script.Run(component);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error executing script: " + ex.Message);
+                return;
+            }
+        }
+
+        private void tv_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
         
 
     }
+
+
+    class DummyComponent : IScriptableComponent
+    {
+        private Form1 f;
+
+        public Form1 Parent
+        {
+            get { return f; }
+            set { f = value; }
+        }
+
+        public void DoSomething(string p)
+        {
+           // f.textBox1.Text = p;
+        }
+    }
+
+
 }
