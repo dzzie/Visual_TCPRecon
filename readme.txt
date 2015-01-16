@@ -8,7 +8,12 @@ leg of the communication will get its own sub node.
 each stream is dumped to a single binary file and each block of
 communication can be highlighted or extracted by clicking on a sub node.
 
-Its handy for looking at binary communication protocols, and has some
+This application also supports a scripting interface, so that you can
+walk the nodes, and extract the data from an external C# script. A sample
+script is provided to dump all POST requests to a single text file. If you
+create more handy scripts, please submit them for inclusion in the distro!
+
+The tool is very handy for looking at binary communication protocols, and has some
 extra tools for web requests.
 
 it also auto extracts all:

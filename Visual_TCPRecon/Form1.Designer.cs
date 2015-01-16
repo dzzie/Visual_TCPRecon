@@ -43,6 +43,10 @@
             this.selectLikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.invertSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.childrenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.collapseTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,6 +75,8 @@
             this.lvIPs = new System.Windows.Forms.ListView();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.saveDlg = new System.Windows.Forms.SaveFileDialog();
+            this.btnParse = new System.Windows.Forms.Button();
+            this.parentsWChildrenSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -106,9 +112,10 @@
             // 
             // btnBrowsePcap
             // 
+            this.btnBrowsePcap.Font = new System.Drawing.Font("Arial Black", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBrowsePcap.Location = new System.Drawing.Point(537, 33);
             this.btnBrowsePcap.Name = "btnBrowsePcap";
-            this.btnBrowsePcap.Size = new System.Drawing.Size(42, 19);
+            this.btnBrowsePcap.Size = new System.Drawing.Size(42, 22);
             this.btnBrowsePcap.TabIndex = 2;
             this.btnBrowsePcap.Text = "...";
             this.btnBrowsePcap.UseVisualStyleBackColor = true;
@@ -138,11 +145,12 @@
             this.selectLikeToolStripMenuItem,
             this.invertSelectionToolStripMenuItem,
             this.clearSelectionToolStripMenuItem,
+            this.uncheckToolStripMenuItem,
             this.toolStripMenuItem1,
             this.collapseTreeToolStripMenuItem,
             this.expandAllToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 192);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 236);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -189,6 +197,38 @@
             this.clearSelectionToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.clearSelectionToolStripMenuItem.Text = "Clear Selection";
             this.clearSelectionToolStripMenuItem.Click += new System.EventHandler(this.clearSelectionToolStripMenuItem_Click);
+            // 
+            // uncheckToolStripMenuItem
+            // 
+            this.uncheckToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allToolStripMenuItem,
+            this.parentsToolStripMenuItem,
+            this.childrenToolStripMenuItem,
+            this.parentsWChildrenSelectedToolStripMenuItem});
+            this.uncheckToolStripMenuItem.Name = "uncheckToolStripMenuItem";
+            this.uncheckToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.uncheckToolStripMenuItem.Text = "Uncheck";
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.allToolStripMenuItem.Text = "All";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.allToolStripMenuItem_Click);
+            // 
+            // parentsToolStripMenuItem
+            // 
+            this.parentsToolStripMenuItem.Name = "parentsToolStripMenuItem";
+            this.parentsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.parentsToolStripMenuItem.Text = "Parents";
+            this.parentsToolStripMenuItem.Click += new System.EventHandler(this.parentsToolStripMenuItem_Click);
+            // 
+            // childrenToolStripMenuItem
+            // 
+            this.childrenToolStripMenuItem.Name = "childrenToolStripMenuItem";
+            this.childrenToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.childrenToolStripMenuItem.Text = "Children";
+            this.childrenToolStripMenuItem.Click += new System.EventHandler(this.childrenToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -424,11 +464,30 @@
             this.columnHeader2.Text = "Unique IP Addresses";
             this.columnHeader2.Width = 200;
             // 
+            // btnParse
+            // 
+            this.btnParse.Location = new System.Drawing.Point(587, 34);
+            this.btnParse.Name = "btnParse";
+            this.btnParse.Size = new System.Drawing.Size(77, 22);
+            this.btnParse.TabIndex = 13;
+            this.btnParse.Text = "Load";
+            this.btnParse.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnParse.UseVisualStyleBackColor = true;
+            this.btnParse.Click += new System.EventHandler(this.btnParse_Click);
+            // 
+            // parentsWChildrenSelectedToolStripMenuItem
+            // 
+            this.parentsWChildrenSelectedToolStripMenuItem.Name = "parentsWChildrenSelectedToolStripMenuItem";
+            this.parentsWChildrenSelectedToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.parentsWChildrenSelectedToolStripMenuItem.Text = "Parents w/Children Selected";
+            this.parentsWChildrenSelectedToolStripMenuItem.Click += new System.EventHandler(this.parentsWChildrenSelectedToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1187, 761);
+            this.Controls.Add(this.btnParse);
             this.Controls.Add(this.lvIPs);
             this.Controls.Add(this.lvDNS);
             this.Controls.Add(this.tabs);
@@ -440,8 +499,9 @@
             this.Controls.Add(this.lv);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "Visual TCPRecon";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
@@ -503,6 +563,12 @@
         private System.Windows.Forms.ToolStripMenuItem runScriptToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeUncheckedStreamsToolStripMenuItem;
         public System.Windows.Forms.SaveFileDialog saveDlg;
+        private System.Windows.Forms.ToolStripMenuItem uncheckToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem childrenToolStripMenuItem;
+        private System.Windows.Forms.Button btnParse;
+        private System.Windows.Forms.ToolStripMenuItem parentsWChildrenSelectedToolStripMenuItem;
     }
 }
 

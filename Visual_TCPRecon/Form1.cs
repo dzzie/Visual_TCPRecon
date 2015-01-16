@@ -486,7 +486,7 @@ namespace Visual_TCPRecon
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            if (File.Exists(Visual_TCPRecon.Properties.Settings.Default.lastPath)) txtPcap.Text = Visual_TCPRecon.Properties.Settings.Default.lastPath; 
         }
 
         private void runScriptToolStripMenuItem_Click(object sender, EventArgs e)
@@ -501,9 +501,12 @@ namespace Visual_TCPRecon
             dlg.Filter = "CSharp Script files (*.cs)|*.cs";
             dlg.FileName = "";// System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
 
-            var scriptDir = Application.StartupPath;
-            if (Directory.Exists(scriptDir + "\\visual_tcprecon")) scriptDir = scriptDir + "\\visual_tcprecon\\";
-            if (Directory.Exists(scriptDir + "\\Scripts")) scriptDir = scriptDir + "\\scripts\\";
+            var scriptDir = Path.GetDirectoryName(Application.ExecutablePath);
+            //MessageBox.Show(scriptDir);
+            if (Directory.Exists(scriptDir + "\\visual_tcprecon")) scriptDir = scriptDir + "\\visual_tcprecon";
+            if (Directory.Exists(scriptDir + "\\visual_tcprecon")) scriptDir = scriptDir + "\\visual_tcprecon";
+            if (Directory.Exists(scriptDir + "\\Scripts")) scriptDir = scriptDir + "\\scripts";
+            //MessageBox.Show(scriptDir);
 
             dlg.InitialDirectory = scriptDir;
             if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -541,6 +544,48 @@ namespace Visual_TCPRecon
         private void tv_AfterSelect(object sender, TreeViewEventArgs e)
         {
 
+        }
+
+        private void allToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes)
+            {
+                n.Checked = false;
+                foreach (TreeNode nn in n.Nodes) nn.Checked = false;
+            }
+        }
+
+        private void parentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes) n.Checked = false;
+        }
+
+        private void childrenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes)
+            {
+                foreach (TreeNode nn in n.Nodes) nn.Checked = false;
+            }
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Visual_TCPRecon.Properties.Settings.Default.lastPath = txtPcap.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void parentsWChildrenSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            foreach (TreeNode n in tv.Nodes)
+            {
+                bool childSelected = false;
+                foreach (TreeNode nn in n.Nodes)
+                {
+                    if (nn.Checked) { childSelected = true; break; }
+                }
+                if (childSelected) n.Checked = false;
+            }
         }
 
         
