@@ -43,10 +43,16 @@
             this.selectLikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.invertSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.parentsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.childrenToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.parentsWChildrenSelectedToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.uncheckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.parentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.childrenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parentsWChildrenSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.collapseTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +61,7 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuCopyTable = new System.Windows.Forms.ToolStripMenuItem();
             this.runScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ConglomerateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tHexView = new System.Windows.Forms.TabPage();
             this.he = new Axrhexed.AxHexEd();
@@ -76,7 +83,7 @@
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.saveDlg = new System.Windows.Forms.SaveFileDialog();
             this.btnParse = new System.Windows.Forms.Button();
-            this.parentsWChildrenSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -145,12 +152,14 @@
             this.selectLikeToolStripMenuItem,
             this.invertSelectionToolStripMenuItem,
             this.clearSelectionToolStripMenuItem,
+            this.checkToolStripMenuItem,
             this.uncheckToolStripMenuItem,
             this.toolStripMenuItem1,
             this.collapseTreeToolStripMenuItem,
-            this.expandAllToolStripMenuItem});
+            this.expandAllToolStripMenuItem,
+            this.renameIPToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 236);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 280);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -198,6 +207,45 @@
             this.clearSelectionToolStripMenuItem.Text = "Clear Selection";
             this.clearSelectionToolStripMenuItem.Click += new System.EventHandler(this.clearSelectionToolStripMenuItem_Click);
             // 
+            // checkToolStripMenuItem
+            // 
+            this.checkToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allToolStripMenuItem1,
+            this.parentsToolStripMenuItem1,
+            this.childrenToolStripMenuItem1,
+            this.parentsWChildrenSelectedToolStripMenuItem1});
+            this.checkToolStripMenuItem.Name = "checkToolStripMenuItem";
+            this.checkToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.checkToolStripMenuItem.Text = "Check";
+            // 
+            // allToolStripMenuItem1
+            // 
+            this.allToolStripMenuItem1.Name = "allToolStripMenuItem1";
+            this.allToolStripMenuItem1.Size = new System.Drawing.Size(220, 22);
+            this.allToolStripMenuItem1.Text = "All";
+            this.allToolStripMenuItem1.Click += new System.EventHandler(this.allToolStripMenuItem1_Click);
+            // 
+            // parentsToolStripMenuItem1
+            // 
+            this.parentsToolStripMenuItem1.Name = "parentsToolStripMenuItem1";
+            this.parentsToolStripMenuItem1.Size = new System.Drawing.Size(220, 22);
+            this.parentsToolStripMenuItem1.Text = "Parents";
+            this.parentsToolStripMenuItem1.Click += new System.EventHandler(this.parentsToolStripMenuItem1_Click);
+            // 
+            // childrenToolStripMenuItem1
+            // 
+            this.childrenToolStripMenuItem1.Name = "childrenToolStripMenuItem1";
+            this.childrenToolStripMenuItem1.Size = new System.Drawing.Size(220, 22);
+            this.childrenToolStripMenuItem1.Text = "Children";
+            this.childrenToolStripMenuItem1.Click += new System.EventHandler(this.childrenToolStripMenuItem1_Click);
+            // 
+            // parentsWChildrenSelectedToolStripMenuItem1
+            // 
+            this.parentsWChildrenSelectedToolStripMenuItem1.Name = "parentsWChildrenSelectedToolStripMenuItem1";
+            this.parentsWChildrenSelectedToolStripMenuItem1.Size = new System.Drawing.Size(220, 22);
+            this.parentsWChildrenSelectedToolStripMenuItem1.Text = "Parents w/Children Selected";
+            this.parentsWChildrenSelectedToolStripMenuItem1.Click += new System.EventHandler(this.parentsWChildrenSelectedToolStripMenuItem1_Click);
+            // 
             // uncheckToolStripMenuItem
             // 
             this.uncheckToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -212,23 +260,30 @@
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.allToolStripMenuItem_Click);
             // 
             // parentsToolStripMenuItem
             // 
             this.parentsToolStripMenuItem.Name = "parentsToolStripMenuItem";
-            this.parentsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.parentsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             this.parentsToolStripMenuItem.Text = "Parents";
             this.parentsToolStripMenuItem.Click += new System.EventHandler(this.parentsToolStripMenuItem_Click);
             // 
             // childrenToolStripMenuItem
             // 
             this.childrenToolStripMenuItem.Name = "childrenToolStripMenuItem";
-            this.childrenToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.childrenToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             this.childrenToolStripMenuItem.Text = "Children";
             this.childrenToolStripMenuItem.Click += new System.EventHandler(this.childrenToolStripMenuItem_Click);
+            // 
+            // parentsWChildrenSelectedToolStripMenuItem
+            // 
+            this.parentsWChildrenSelectedToolStripMenuItem.Name = "parentsWChildrenSelectedToolStripMenuItem";
+            this.parentsWChildrenSelectedToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.parentsWChildrenSelectedToolStripMenuItem.Text = "Parents w/Children Selected";
+            this.parentsWChildrenSelectedToolStripMenuItem.Click += new System.EventHandler(this.parentsWChildrenSelectedToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -239,7 +294,7 @@
             // 
             this.collapseTreeToolStripMenuItem.Name = "collapseTreeToolStripMenuItem";
             this.collapseTreeToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.collapseTreeToolStripMenuItem.Text = "Collapse Tree";
+            this.collapseTreeToolStripMenuItem.Text = "Collapse All";
             this.collapseTreeToolStripMenuItem.Click += new System.EventHandler(this.collapseTreeToolStripMenuItem_Click);
             // 
             // expandAllToolStripMenuItem
@@ -264,7 +319,8 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuCopyTable,
-            this.runScriptToolStripMenuItem});
+            this.runScriptToolStripMenuItem,
+            this.ConglomerateToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -272,16 +328,23 @@
             // mnuCopyTable
             // 
             this.mnuCopyTable.Name = "mnuCopyTable";
-            this.mnuCopyTable.Size = new System.Drawing.Size(139, 22);
+            this.mnuCopyTable.Size = new System.Drawing.Size(271, 22);
             this.mnuCopyTable.Text = "Copy Table";
             this.mnuCopyTable.Click += new System.EventHandler(this.mnuCopyTable_Click);
             // 
             // runScriptToolStripMenuItem
             // 
             this.runScriptToolStripMenuItem.Name = "runScriptToolStripMenuItem";
-            this.runScriptToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.runScriptToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.runScriptToolStripMenuItem.Text = "Run Script";
             this.runScriptToolStripMenuItem.Click += new System.EventHandler(this.runScriptToolStripMenuItem_Click);
+            // 
+            // ConglomerateToolStripMenuItem
+            // 
+            this.ConglomerateToolStripMenuItem.Name = "ConglomerateToolStripMenuItem";
+            this.ConglomerateToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.ConglomerateToolStripMenuItem.Text = "Conglomerate Streams by Dest IP:Port";
+            this.ConglomerateToolStripMenuItem.Click += new System.EventHandler(this.seperToolStripMenuItem_Click);
             // 
             // tabs
             // 
@@ -475,12 +538,12 @@
             this.btnParse.UseVisualStyleBackColor = true;
             this.btnParse.Click += new System.EventHandler(this.btnParse_Click);
             // 
-            // parentsWChildrenSelectedToolStripMenuItem
+            // renameIPToolStripMenuItem
             // 
-            this.parentsWChildrenSelectedToolStripMenuItem.Name = "parentsWChildrenSelectedToolStripMenuItem";
-            this.parentsWChildrenSelectedToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.parentsWChildrenSelectedToolStripMenuItem.Text = "Parents w/Children Selected";
-            this.parentsWChildrenSelectedToolStripMenuItem.Click += new System.EventHandler(this.parentsWChildrenSelectedToolStripMenuItem_Click);
+            this.renameIPToolStripMenuItem.Name = "renameIPToolStripMenuItem";
+            this.renameIPToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.renameIPToolStripMenuItem.Text = "Rename IP";
+            this.renameIPToolStripMenuItem.Click += new System.EventHandler(this.renameIPToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -569,6 +632,13 @@
         private System.Windows.Forms.ToolStripMenuItem childrenToolStripMenuItem;
         private System.Windows.Forms.Button btnParse;
         private System.Windows.Forms.ToolStripMenuItem parentsWChildrenSelectedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ConglomerateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem parentsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem childrenToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem parentsWChildrenSelectedToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem renameIPToolStripMenuItem;
     }
 }
 

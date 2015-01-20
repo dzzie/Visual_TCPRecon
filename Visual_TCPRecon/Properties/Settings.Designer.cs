@@ -34,5 +34,17 @@ namespace Visual_TCPRecon.Properties {
                 this["lastPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool byPort {
+            get {
+                return ((bool)(this["byPort"]));
+            }
+            set {
+                this["byPort"] = value;
+            }
+        }
     }
 }

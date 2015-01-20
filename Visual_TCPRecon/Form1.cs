@@ -44,6 +44,7 @@ namespace Visual_TCPRecon
         public DataBlock curdb = null;
         Object blankUrl = "about:blank";
         ListView selLV;
+        TreeNode curNode;
 
         public Form1()
         {
@@ -54,18 +55,42 @@ namespace Visual_TCPRecon
             lvIPs.ContextMenuStrip = mnuLvPopup;
         }
 
-        #region reconManager callbacks
+        //#region reconManager callbacks
+        private string getParentNodeName(TcpRecon recon) {
+            string nText = Path.GetFileName(recon.dumpFile);
+            return getParentNodeName(nText);
+        }
+
+        private string getParentNodeName(string nText) 
+        {
+            if (ConglomerateToolStripMenuItem.Checked)
+            {
+                int a = nText.LastIndexOf("  ");
+                int b = nText.LastIndexOf("--");
+                if (a > 0)
+                {
+                    string temp = nText.Substring(0, a);
+                    if (b > 0) temp += " --" + nText.Substring(b + 2);
+                    nText = temp;
+                }
+            }
+            return nText;
+        }
+
         public void NewStream(TcpRecon recon)
         {
-            TreeNode n = tv.Nodes.Add(recon.HashCode, Path.GetFileName(recon.dumpFile));
+            TreeNode n = null;
+            string nText = getParentNodeName(recon);
+            n = tv.Nodes.Add(recon.HashCode, nText);
             n.Tag = recon;
             tv.Refresh();
         }
 
         private void NewNode(DataBlock db)
         {
+            TreeNode n = null;
             string display = string.Format("{0:x},{1:x}, srcPort:{2}", db.startOffset, db.length, db.recon.LastSourcePort);
-            TreeNode n = tv.Nodes[db.recon.HashCode];
+            n = tv.Nodes[db.recon.HashCode];
             TreeNode nn = n.Nodes.Add(display);
             nn.Tag = db;
         }
@@ -76,6 +101,30 @@ namespace Visual_TCPRecon
             List<TreeNode> rem = new List<TreeNode>();
 
             foreach (string s in ips) lvIPs.Items.Add(s);
+
+            if (ConglomerateToolStripMenuItem.Checked)
+            {
+            startOver:
+                foreach (TreeNode n in tv.Nodes)
+                {
+                    foreach (TreeNode n2 in tv.Nodes)
+                    {
+                        if (n2 != n)
+                        {
+                            if (n2.Text == n.Text)
+                            {
+                                foreach (TreeNode n3 in n2.Nodes)
+                                {
+                                    TreeNode n4 = n.Nodes.Add(n3.Text);
+                                    n4.Tag = n3.Tag;
+                                }
+                                tv.Nodes.Remove(n2);
+                                goto startOver; //or you get invalid object reference..removing from treeviews is tricky..
+                            }
+                        }
+                    }
+                }
+            }
 
             foreach (TreeNode n in tv.Nodes)
             {
@@ -123,7 +172,7 @@ namespace Visual_TCPRecon
             lvDNS.Items.Add(dns.dnsName);
         }
 
-        #endregion
+        //#endregion
 
         public static string InputBox(string msg){  return InputBox(msg, "", ""); }
         public static string InputBox(string msg, string title, string defaultVal)
@@ -184,7 +233,9 @@ namespace Visual_TCPRecon
         {
             TcpRecon tr = null;
             bool viewOnly = true;
-           
+            
+            curNode = n;
+
             if (curdb != null) { curdb.FreeData(); curdb = null; }
             
             if (n.Tag is TcpRecon) 
@@ -486,7 +537,8 @@ namespace Visual_TCPRecon
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (File.Exists(Visual_TCPRecon.Properties.Settings.Default.lastPath)) txtPcap.Text = Visual_TCPRecon.Properties.Settings.Default.lastPath; 
+            if (File.Exists(Visual_TCPRecon.Properties.Settings.Default.lastPath)) txtPcap.Text = Visual_TCPRecon.Properties.Settings.Default.lastPath;
+            ConglomerateToolStripMenuItem.Checked = Visual_TCPRecon.Properties.Settings.Default.byPort;
         }
 
         private void runScriptToolStripMenuItem_Click(object sender, EventArgs e)
@@ -570,13 +622,13 @@ namespace Visual_TCPRecon
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Visual_TCPRecon.Properties.Settings.Default.byPort = ConglomerateToolStripMenuItem.Checked;
             Visual_TCPRecon.Properties.Settings.Default.lastPath = txtPcap.Text;
             Properties.Settings.Default.Save();
         }
 
         private void parentsWChildrenSelectedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
             foreach (TreeNode n in tv.Nodes)
             {
                 bool childSelected = false;
@@ -588,7 +640,77 @@ namespace Visual_TCPRecon
             }
         }
 
-        
+        private void seperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ConglomerateToolStripMenuItem.Checked = !ConglomerateToolStripMenuItem.Checked;
+        }
+
+        private void allToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes)
+            {
+                n.Checked = true;
+                foreach (TreeNode nn in n.Nodes) nn.Checked = true;
+            }
+        }
+
+        private void parentsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes) n.Checked = true;
+        }
+
+        private void childrenToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes)
+            {
+                foreach (TreeNode nn in n.Nodes) nn.Checked = true;
+            }
+        }
+
+        private void parentsWChildrenSelectedToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes)
+            {
+                bool childSelected = false;
+                foreach (TreeNode nn in n.Nodes)
+                {
+                    if (nn.Checked) { childSelected = true; break; }
+                }
+                if (childSelected) n.Checked = true;
+            }
+        }
+
+        private void renameIPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string def="";
+            if (curNode != null) { def = curNode.Text; }
+            def = InputBox("Rename IP\n\nFormat IP,NewName", "RenameIP", def);
+            if (def.Length == 0) return;
+
+            string[] fuckDotNet = new string[] { "->" };
+            string[] parts = def.Split(fuckDotNet, StringSplitOptions.RemoveEmptyEntries);
+            
+            if (parts.Length != 2)
+            {
+                MessageBox.Show("Invalid format");
+                return;
+            }
+
+            parts[0] = parts[0].Trim();
+            parts[1] = parts[1].Trim();
+            
+            if (parts[0].Length == 0 || parts[1].Length == 0)
+            {
+                MessageBox.Show("cannot replace with empty string");
+                return;
+            }
+
+            foreach (TreeNode n in tv.Nodes)
+            {
+                if(n.Text.IndexOf(parts[0]) >= 0) n.Text = n.Text.Replace(parts[0], parts[1]); 
+            }
+
+        }        
 
     }
 
