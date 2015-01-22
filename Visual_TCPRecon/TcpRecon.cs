@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using Visual_TCPRecon;
+
+//author  : Saar Yahalom, 21 Sep 2007 
+//original: http://www.codeproject.com/Articles/20501/TCP-Session-Reconstruction-Tool
 
 // Translated from the file follow.c from WireShark source code
 // the code can be found at: http://www.wireshark.org/download.html
@@ -49,6 +53,19 @@ public class TcpRecon
     public long CurrentOffset = 0;
     public bool PacketWritten = false;
     public long PreviousPacketEndOffset = 0;
+   
+    public string StreamStartTimeStamp;
+    public string relativeTimeStamp;
+
+    public string GetDetails()
+    {
+        string t = "Stream Details\r\n" + "-".Repeat(20);
+        t += "\r\nFile: " + Path.GetFileName(dumpFile);
+        t += "\r\nDir: " + Path.GetDirectoryName(dumpFile);
+        t += "\r\nStart Epoch Time: " + StreamStartTimeStamp;
+        t += "\r\nrelative Time: " + relativeTimeStamp;
+        return t+"\r\n\r\n";
+    }
 
     public string HashCode
     {

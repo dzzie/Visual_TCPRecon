@@ -56,6 +56,7 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.collapseTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,6 +72,8 @@
             this.wb = new AxSHDocVw.AxWebBrowser();
             this.tImageView = new System.Windows.Forms.TabPage();
             this.pict = new System.Windows.Forms.PictureBox();
+            this.Details = new System.Windows.Forms.TabPage();
+            this.txtDetails = new System.Windows.Forms.TextBox();
             this.lv = new System.Windows.Forms.ListView();
             this.WebRequests = new System.Windows.Forms.ColumnHeader();
             this.mnuLvPopup = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -83,7 +86,7 @@
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.saveDlg = new System.Windows.Forms.SaveFileDialog();
             this.btnParse = new System.Windows.Forms.Button();
-            this.renameIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -94,6 +97,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.wb)).BeginInit();
             this.tImageView.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pict)).BeginInit();
+            this.Details.SuspendLayout();
             this.mnuLvPopup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -159,7 +163,7 @@
             this.expandAllToolStripMenuItem,
             this.renameIPToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 280);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 258);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -304,6 +308,13 @@
             this.expandAllToolStripMenuItem.Text = "Expand all";
             this.expandAllToolStripMenuItem.Click += new System.EventHandler(this.expandAllToolStripMenuItem_Click);
             // 
+            // renameIPToolStripMenuItem
+            // 
+            this.renameIPToolStripMenuItem.Name = "renameIPToolStripMenuItem";
+            this.renameIPToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.renameIPToolStripMenuItem.Text = "Rename IP";
+            this.renameIPToolStripMenuItem.Click += new System.EventHandler(this.renameIPToolStripMenuItem_Click);
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -354,6 +365,7 @@
             this.tabs.Controls.Add(this.tTextView);
             this.tabs.Controls.Add(this.tWebView);
             this.tabs.Controls.Add(this.tImageView);
+            this.tabs.Controls.Add(this.Details);
             this.tabs.Location = new System.Drawing.Point(395, 69);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
@@ -440,6 +452,26 @@
             this.pict.TabIndex = 0;
             this.pict.TabStop = false;
             // 
+            // Details
+            // 
+            this.Details.Controls.Add(this.txtDetails);
+            this.Details.Location = new System.Drawing.Point(4, 4);
+            this.Details.Name = "Details";
+            this.Details.Padding = new System.Windows.Forms.Padding(3);
+            this.Details.Size = new System.Drawing.Size(772, 486);
+            this.Details.TabIndex = 4;
+            this.Details.Text = "Details";
+            this.Details.UseVisualStyleBackColor = true;
+            // 
+            // txtDetails
+            // 
+            this.txtDetails.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDetails.Location = new System.Drawing.Point(12, 13);
+            this.txtDetails.Multiline = true;
+            this.txtDetails.Name = "txtDetails";
+            this.txtDetails.Size = new System.Drawing.Size(747, 459);
+            this.txtDetails.TabIndex = 0;
+            // 
             // lv
             // 
             this.lv.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -464,9 +496,10 @@
             this.mnuLvPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copySelectedToolStripMenuItem,
             this.copyAllToolStripMenuItem,
-            this.selectAllToolStripMenuItem});
+            this.selectAllToolStripMenuItem,
+            this.searchToolStripMenuItem});
             this.mnuLvPopup.Name = "mnuLvPopup";
-            this.mnuLvPopup.Size = new System.Drawing.Size(155, 70);
+            this.mnuLvPopup.Size = new System.Drawing.Size(155, 114);
             // 
             // copySelectedToolStripMenuItem
             // 
@@ -538,12 +571,12 @@
             this.btnParse.UseVisualStyleBackColor = true;
             this.btnParse.Click += new System.EventHandler(this.btnParse_Click);
             // 
-            // renameIPToolStripMenuItem
+            // searchToolStripMenuItem
             // 
-            this.renameIPToolStripMenuItem.Name = "renameIPToolStripMenuItem";
-            this.renameIPToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.renameIPToolStripMenuItem.Text = "Rename IP";
-            this.renameIPToolStripMenuItem.Click += new System.EventHandler(this.renameIPToolStripMenuItem_Click);
+            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.searchToolStripMenuItem.Text = "Search";
+            this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -577,6 +610,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.wb)).EndInit();
             this.tImageView.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pict)).EndInit();
+            this.Details.ResumeLayout(false);
+            this.Details.PerformLayout();
             this.mnuLvPopup.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -639,6 +674,9 @@
         private System.Windows.Forms.ToolStripMenuItem childrenToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem parentsWChildrenSelectedToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem renameIPToolStripMenuItem;
+        private System.Windows.Forms.TabPage Details;
+        private System.Windows.Forms.TextBox txtDetails;
+        private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
     }
 }
 

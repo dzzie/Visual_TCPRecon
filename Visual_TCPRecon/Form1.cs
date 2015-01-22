@@ -229,7 +229,7 @@ namespace Visual_TCPRecon
             TvNodeClick(e.Node);
         }
 
-        private void TvNodeClick(TreeNode n)
+        public void TvNodeClick(TreeNode n)
         {
             TcpRecon tr = null;
             bool viewOnly = true;
@@ -346,7 +346,7 @@ namespace Visual_TCPRecon
             MessageBox.Show(string.Format("Extraction Complete {0}/{1} blocks extracted.", j, i));
         }
 
-        private void tabs_SelectedIndexChanged(object sender, EventArgs e)
+        public void tabs_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (curdb == null) return;
             //hex tab always loaded
@@ -356,7 +356,8 @@ namespace Visual_TCPRecon
             string tmp = "";
 
             if (tabs.SelectedTab.Text == "TextView") rtf.Text = curdb.GetBody();
-            
+            if (tabs.SelectedTab.Text == "Details") txtDetails.Text = curdb.GetDetails();
+
             if (tabs.SelectedTab.Text == "ImageView")
             {
                 tmp = curdb.BinaryBodyToTmpFile();
@@ -393,6 +394,7 @@ namespace Visual_TCPRecon
                 tabs.Height = tv.Height;
                 he.Height = tabs.Height - 40;
                 rtf.Height = he.Height;
+                txtDetails.Height = he.Height;
 
                 lv.Columns[0].Width = lv.Width - 10;
                 lvDNS.Columns[0].Width = lvDNS.Width - 10;
@@ -687,9 +689,8 @@ namespace Visual_TCPRecon
             def = InputBox("Rename IP\n\nFormat IP,NewName", "RenameIP", def);
             if (def.Length == 0) return;
 
-            string[] fuckDotNet = new string[] { "->" };
-            string[] parts = def.Split(fuckDotNet, StringSplitOptions.RemoveEmptyEntries);
-            
+            string[] parts = def.Split("->"); //extension method..
+
             if (parts.Length != 2)
             {
                 MessageBox.Show("Invalid format");
@@ -710,7 +711,32 @@ namespace Visual_TCPRecon
                 if(n.Text.IndexOf(parts[0]) >= 0) n.Text = n.Text.Replace(parts[0], parts[1]); 
             }
 
-        }        
+        }
+
+        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string match = InputBox("Search for");
+            if (match.Length == 0) return;
+            FrmList fl = new FrmList();
+            fl.parent = this;
+            fl.lv.Items.Clear();
+
+            foreach (ListViewItem li in selLV.Items)
+            {
+                if (li.Text.IndexOf(match, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    ListViewItem li2 = fl.lv.Items.Add(li.Text);
+                    li2.Tag = li.Tag;
+                }
+            }
+
+            fl.Show();
+
+
+           
+        }
+
+              
 
     }
 

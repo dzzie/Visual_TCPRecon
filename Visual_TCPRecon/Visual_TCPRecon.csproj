@@ -62,11 +62,18 @@
     <Compile Include="cDNS.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="DataBlock.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmList.Designer.cs">
+      <DependentUpon>FrmList.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IScript.cs" />
     <Compile Include="Interfaces\IScriptableComponent.cs" />
@@ -74,6 +81,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmList.resx">
+      <DependentUpon>FrmList.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

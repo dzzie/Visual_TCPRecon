@@ -12,6 +12,12 @@ using System.Threading;
 //know so after the next packet has already been processed. This class hides those details from the
 //data consumer which sits above it for clarity.
 
+//Each individual stream has its own instance of this class. Streams are denoted by source: dest IP -- source: dest port pairs
+//Each stream is saved to an individual file consisting of multiple data blocks. Each data block is held in its own class
+//Which tracks file offset and size. The data can be extracted through the main ui to individual files. The main ui
+//Can also do a display trick where it conglomerates multiple streams (same ips and dest ports but different source ports 
+//Like multiple web requests) under a single tree node. 
+
 namespace Visual_TCPRecon
 {
     class ReconManager
@@ -21,6 +27,9 @@ namespace Visual_TCPRecon
         static string capFile = "";
         private Form1 owner;
         private List<string> ips = new List<string>(); //all ip's seen
+        private TCPPacket curPacket;
+        private long firstTimeStamp_s = 0;
+        private long firstTimeStamp_ms;
 
         static Dictionary<Connection, TcpRecon> sharpPcapDict = new Dictionary<Connection, TcpRecon>();
 
@@ -58,6 +67,12 @@ namespace Visual_TCPRecon
             if (recon.isComplete) endAt =(int)recon.CurrentOffset;
 
             DataBlock db = new DataBlock(recon.dumpFile, startAt, endAt - startAt, recon);
+            db.EpochTimeStamp = curPacket.PcapHeader.Seconds.ToString() + "." + curPacket.PcapHeader.MicroSeconds.ToString();
+
+            long hi = (long)curPacket.PcapHeader.Seconds - firstTimeStamp_s;
+            long low = (long)curPacket.PcapHeader.MicroSeconds - firstTimeStamp_ms;
+            db.relativeTimeStamp = hi.ToString() + "." + low.ToString();
+
             owner.Invoke(NewNode, db); 
 
             recon.LastSavedOffset = recon.PreviousPacketEndOffset;
@@ -84,6 +99,13 @@ namespace Visual_TCPRecon
         // The callback function for the SharpPcap library
         private void device_PcapOnPacketArrival(object sender, Packet packet)
         {
+
+            if (firstTimeStamp_s == 0)
+            {
+                firstTimeStamp_s = packet.Timeval.Seconds;
+                firstTimeStamp_ms = packet.Timeval.MicroSeconds;
+            }
+
             if (packet is UDPPacket)
             {
                 HandleDNS(packet);
@@ -95,12 +117,18 @@ namespace Visual_TCPRecon
             TCPPacket tcpPacket = (TCPPacket)packet;
             Connection c = new Connection(tcpPacket);
             TcpRecon recon = null;
+            curPacket = tcpPacket;
 
             if (!sharpPcapDict.ContainsKey(c))
             {
                 c.generateFileName(outDir);
                 recon = new TcpRecon(c.fileName);
                 recon.LastSourcePort = tcpPacket.SourcePort;
+                recon.StreamStartTimeStamp = packet.PcapHeader.Seconds.ToString() + "." + packet.PcapHeader.MicroSeconds.ToString();
+                long hi = (long)packet.PcapHeader.Seconds - firstTimeStamp_s;
+                long low = (long)packet.PcapHeader.MicroSeconds - firstTimeStamp_ms;
+                recon.relativeTimeStamp = hi.ToString() + "." + low.ToString();
+
                 sharpPcapDict.Add(c, recon);
                 if (!IPExists("tcp: " + tcpPacket.DestinationAddress)) ips.Add("tcp: " + tcpPacket.DestinationAddress);
                 if (!IPExists("tcp: " + tcpPacket.SourceAddress)) ips.Add("tcp: " + tcpPacket.SourceAddress);

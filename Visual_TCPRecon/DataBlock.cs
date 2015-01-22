@@ -28,6 +28,8 @@ namespace Visual_TCPRecon
         public int length;
         public bool dataLoaded = false;
         public TcpRecon recon;
+        public string EpochTimeStamp;  //For the last packet added to reassembled data block
+        public string relativeTimeStamp;
 
         public enum DataTypes { dtBinary=0, dtHttpReq, dtHttpResp };
         public DataTypes DataType = DataTypes.dtBinary;
@@ -37,6 +39,18 @@ namespace Visual_TCPRecon
         public bool isChunked = false;
         public string HttpHeader="";
         public string HttpFirstLine = "";
+
+        public string GetDetails()
+        {
+            string t = recon.GetDetails();
+            t += "DataBlock\r\n" + "-".Repeat(20);
+            t += "\r\nstartOffset: " + startOffset.ToString("X");
+            t += "\r\nendOffset: " + endOffset.ToString("X");
+            t += "\r\nlength: " + length.ToString();
+            t += "\r\nlast packet EpochTimeStamp: " + EpochTimeStamp;
+            t += "\r\nlast packet relativeTimeStamp: " + relativeTimeStamp;
+            return t;
+        }
 
         public DataBlock(string pFile, int start, int len, TcpRecon pRecon)
         {
