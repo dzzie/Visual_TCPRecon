@@ -25,6 +25,16 @@
 
     class MyCustomScript : IScript
     {
+        private bool AnyInstr(string s, string csvTriggers)
+        {
+            string[] x = csvTriggers.Split(',');
+            foreach (string xx in x)
+            {
+                if(s.IndexOf(xx, StringComparison.CurrentCultureIgnoreCase) > 0) return true;
+            }
+            return false;
+        }
+
         public void Run(IScriptableComponent component)
         {
 	        int i=0, j=0, hits=0;
@@ -74,7 +84,7 @@
                             nn.Checked = true;
                         }
 
-                        if (fl.IndexOf("500") > 0 || fl.IndexOf("408") > 0) //server error or req timeout..
+                        if (AnyInstr(fl,"500,408,401,403")) //error,timeout,unauthorized,forbidden  
                         {
                             f.setNodeColor(nn, 1);
                             w.Write("Http Error code found in: " + nn.Text + " " + fl + "\r\n");

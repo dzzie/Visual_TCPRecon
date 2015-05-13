@@ -208,6 +208,7 @@ namespace Visual_TCPRecon
             TimeSpan totalTime = (DateTime.Now - startTime);
             this.Text = "  Pcap size: " + FileSizeToHumanReadable(txtPcap.Text) + string.Format("      Processing time: {0} seconds", totalTime.TotalSeconds);
             pb.Value = 0;
+            pb2.Value = 0;
 
         }
 
@@ -457,10 +458,12 @@ namespace Visual_TCPRecon
             {
                 //lvDNS.Left = this.Width - lvDNS.Width - 20;
                 lv.Width = this.Width - lv.Left - 20; // -lvDNS.Width;
-                
-                lv.Height = this.Height - lv.Top - 40;
-                lvDNS.Height = lv.Height;
-                lvIPs.Height = lv.Height;
+
+
+                lvDNS.Height = this.Height - lv.Top - 40;
+                lvIPs.Height = this.Height - lv.Top - 40;
+                lv.Height = this.Height - lv.Top - 40 - txtFilter.Height;
+
                 tv.Top = 75;
                 tv.Height =  lv.Top  - tv.Top - 20  ;
                 tabs.Top = tv.Top;
@@ -476,9 +479,21 @@ namespace Visual_TCPRecon
                 lv.Columns[0].Width = lv.Width - 10;
                 lvDNS.Columns[0].Width = lvDNS.Width - 10;
 
+                MatchSize(lv, lvFiltered);
+                txtFilter.Top = lv.Top + lv.Height +5 ;
+                lblFilter.Top = txtFilter.Top;
+
             }catch(Exception ex){}
 
 
+        }
+
+        private void MatchSize(ListView lv, ListView lv2)
+        {
+            lv2.Top = lv.Top;
+            lv2.Left = lv.Left;
+            lv2.Width = lv.Width;
+            lv2.Height = lv.Height;
         }
 
         private void lv_SelectedIndexChanged(object sender, EventArgs e)
@@ -618,6 +633,7 @@ namespace Visual_TCPRecon
         {
             if (File.Exists(Visual_TCPRecon.Properties.Settings.Default.lastPath)) txtPcap.Text = Visual_TCPRecon.Properties.Settings.Default.lastPath;
             ConglomerateToolStripMenuItem.Checked = Visual_TCPRecon.Properties.Settings.Default.byPort;
+             
         }
 
         private void runScriptToolStripMenuItem_Click(object sender, EventArgs e)
@@ -875,6 +891,42 @@ namespace Visual_TCPRecon
             Process p = Process.Start(pInfo);
             //p.WaitForInputIdle();
             p.WaitForExit();
+        }
+
+        private void txtFilter_TextChanged(object sender, EventArgs e)
+        {
+            if (txtFilter.Text.Length == 0) { lvFiltered.Visible = false; return; }
+            lvFiltered.Visible = true;
+            lvFiltered.Items.Clear();
+
+            foreach (ListViewItem li in lv.Items)
+            {
+                if (li.Text.IndexOf(txtFilter.Text, StringComparison.CurrentCultureIgnoreCase) != -1)
+                {
+                    ListViewItem li2 = lvFiltered.Items.Add(li.Text);
+                    li2.Tag = li.Tag;
+                }
+            }
+
+            lvFiltered.Columns[0].Text = "Filtered Web Requests: " + lvFiltered.Items.Count;
+
+        }
+
+        private void lvFiltered_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selLV = lvFiltered;
+            try
+            {
+                ListViewItem li = lvFiltered.SelectedItems[0];
+                TreeNode n = (TreeNode)li.Tag;
+                tv.CollapseAll();
+                tv.SelectedNode = n;
+                TvNodeClick(n);
+                n.EnsureVisible();
+                tabs_SelectedIndexChanged(null, null);
+            }
+            catch (Exception ex) { }
+
         }
 
 

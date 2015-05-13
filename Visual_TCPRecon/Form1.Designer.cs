@@ -75,8 +75,6 @@
             this.pict = new System.Windows.Forms.PictureBox();
             this.Details = new System.Windows.Forms.TabPage();
             this.txtDetails = new System.Windows.Forms.TextBox();
-            this.lv = new System.Windows.Forms.ListView();
-            this.WebRequests = new System.Windows.Forms.ColumnHeader();
             this.mnuLvPopup = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copySelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,6 +88,12 @@
             this.btnParse = new System.Windows.Forms.Button();
             this.pb = new System.Windows.Forms.ProgressBar();
             this.pb2 = new System.Windows.Forms.ProgressBar();
+            this.txtFilter = new System.Windows.Forms.TextBox();
+            this.lblFilter = new System.Windows.Forms.Label();
+            this.lvFiltered = new System.Windows.Forms.ListView();
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.lv = new System.Windows.Forms.ListView();
+            this.WebRequests = new System.Windows.Forms.ColumnHeader();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -483,25 +487,6 @@
             this.txtDetails.Size = new System.Drawing.Size(747, 459);
             this.txtDetails.TabIndex = 0;
             // 
-            // lv
-            // 
-            this.lv.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lv.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.WebRequests});
-            this.lv.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lv.Location = new System.Drawing.Point(484, 587);
-            this.lv.Name = "lv";
-            this.lv.Size = new System.Drawing.Size(691, 169);
-            this.lv.TabIndex = 10;
-            this.lv.UseCompatibleStateImageBehavior = false;
-            this.lv.View = System.Windows.Forms.View.Details;
-            this.lv.SelectedIndexChanged += new System.EventHandler(this.lv_SelectedIndexChanged);
-            // 
-            // WebRequests
-            // 
-            this.WebRequests.Text = "Web Requests";
-            this.WebRequests.Width = 800;
-            // 
             // mnuLvPopup
             // 
             this.mnuLvPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -603,12 +588,72 @@
             this.pb2.Size = new System.Drawing.Size(495, 15);
             this.pb2.TabIndex = 15;
             // 
+            // txtFilter
+            // 
+            this.txtFilter.Location = new System.Drawing.Point(531, 727);
+            this.txtFilter.Name = "txtFilter";
+            this.txtFilter.Size = new System.Drawing.Size(239, 20);
+            this.txtFilter.TabIndex = 19;
+            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
+            // 
+            // lblFilter
+            // 
+            this.lblFilter.AutoSize = true;
+            this.lblFilter.Location = new System.Drawing.Point(495, 730);
+            this.lblFilter.Name = "lblFilter";
+            this.lblFilter.Size = new System.Drawing.Size(29, 13);
+            this.lblFilter.TabIndex = 18;
+            this.lblFilter.Text = "Filter";
+            // 
+            // lvFiltered
+            // 
+            this.lvFiltered.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lvFiltered.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3});
+            this.lvFiltered.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lvFiltered.Location = new System.Drawing.Point(791, 643);
+            this.lvFiltered.Name = "lvFiltered";
+            this.lvFiltered.Size = new System.Drawing.Size(377, 104);
+            this.lvFiltered.TabIndex = 17;
+            this.lvFiltered.UseCompatibleStateImageBehavior = false;
+            this.lvFiltered.View = System.Windows.Forms.View.Details;
+            this.lvFiltered.Visible = false;
+            this.lvFiltered.SelectedIndexChanged += new System.EventHandler(this.lvFiltered_SelectedIndexChanged);
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Filtered Web Requests";
+            this.columnHeader3.Width = 800;
+            // 
+            // lv
+            // 
+            this.lv.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lv.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.WebRequests});
+            this.lv.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lv.Location = new System.Drawing.Point(484, 587);
+            this.lv.Name = "lv";
+            this.lv.Size = new System.Drawing.Size(691, 138);
+            this.lv.TabIndex = 16;
+            this.lv.UseCompatibleStateImageBehavior = false;
+            this.lv.View = System.Windows.Forms.View.Details;
+            this.lv.SelectedIndexChanged += new System.EventHandler(this.lv_SelectedIndexChanged);
+            // 
+            // WebRequests
+            // 
+            this.WebRequests.Text = "Web Requests";
+            this.WebRequests.Width = 800;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1187, 761);
+            this.Controls.Add(this.lvFiltered);
+            this.Controls.Add(this.txtFilter);
+            this.Controls.Add(this.lblFilter);
             this.Controls.Add(this.pb2);
+            this.Controls.Add(this.lv);
             this.Controls.Add(this.pb);
             this.Controls.Add(this.btnParse);
             this.Controls.Add(this.lvIPs);
@@ -619,7 +664,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnBrowsePcap);
             this.Controls.Add(this.txtPcap);
-            this.Controls.Add(this.lv);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Visual TCPRecon";
@@ -665,8 +709,6 @@
         private Axrhexed.AxHexEd he;
         private System.Windows.Forms.RichTextBox rtf;
         private System.Windows.Forms.TabPage tWebView;
-        public System.Windows.Forms.ListView lv;
-        private System.Windows.Forms.ColumnHeader WebRequests;
         private System.Windows.Forms.ContextMenuStrip mnuLvPopup;
         private System.Windows.Forms.ToolStripMenuItem copySelectedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyAllToolStripMenuItem;
@@ -707,6 +749,12 @@
         public System.Windows.Forms.ProgressBar pb;
         private System.Windows.Forms.ToolStripMenuItem splitLargePCAPToolStripMenuItem;
         public System.Windows.Forms.ProgressBar pb2;
+        private System.Windows.Forms.TextBox txtFilter;
+        private System.Windows.Forms.Label lblFilter;
+        public System.Windows.Forms.ListView lvFiltered;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        public System.Windows.Forms.ListView lv;
+        private System.Windows.Forms.ColumnHeader WebRequests;
     }
 }
 
