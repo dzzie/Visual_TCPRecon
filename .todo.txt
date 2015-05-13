@@ -1,1 +1,2 @@
 relate dns name to ip
+extract chunked blocks, currently interleaved with sizes

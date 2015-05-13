@@ -13,6 +13,8 @@ using VTcpRecon;
 using System.Threading;
 using Microsoft.VisualBasic;
 using Visual_TCPRecon.Interfaces;
+using System.Diagnostics;
+using System.Drawing;
 
 /*
  *  This code was modified by dzzie@yahoo.com from the base at:
@@ -45,6 +47,7 @@ namespace Visual_TCPRecon
         Object blankUrl = "about:blank";
         ListView selLV;
         TreeNode curNode;
+        ReconManager rm;
 
         public Form1()
         {
@@ -99,14 +102,34 @@ namespace Visual_TCPRecon
         {
             ListViewItem li = null;
             List<TreeNode> rem = new List<TreeNode>();
+            int ii = 0;
+
+            if (rm.ErrorMessage.Length > 0)
+            {
+                this.Text = rm.ErrorMessage;
+                this.Refresh();
+                return;
+            }
+
+            this.Text = "Loading Complete now parsing...";
+            this.Refresh();
 
             foreach (string s in ips) lvIPs.Items.Add(s);
 
             if (ConglomerateToolStripMenuItem.Checked)
             {
+                this.Text = "Conglomerating streams option checked...";
+                this.Refresh();
+                Application.DoEvents();
+
             startOver:
+                ii = 0;
+
                 foreach (TreeNode n in tv.Nodes)
                 {
+                    ii++;
+                    if (ii % 100 == 0) setpb(ii, tv.Nodes.Count);
+
                     foreach (TreeNode n2 in tv.Nodes)
                     {
                         if (n2 != n)
@@ -126,8 +149,16 @@ namespace Visual_TCPRecon
                 }
             }
 
-            foreach (TreeNode n in tv.Nodes)
+            this.Text = "Scanning for http content..";
+            this.Refresh();
+            ii = 0;
+
+            foreach (TreeNode n in tv.Nodes)//parent node shows stream info..
             {
+                ii++;
+                if (ii % 10 == 0) setpb(ii, tv.Nodes.Count);
+                int st = Environment.TickCount;
+
                 if (n.Nodes.Count == 0)
                 {
                     rem.Add(n);
@@ -135,8 +166,18 @@ namespace Visual_TCPRecon
                 else
                 {
                     n.Text += "  (" + n.Nodes.Count + ")";
-                    foreach (TreeNode nn in n.Nodes)
+                    /*tv.Refresh();
+                    this.Refresh();
+                    Application.DoEvents();*/
+
+                    setpb(0, 0, 2);
+                    int ni = 0;
+                    foreach (TreeNode nn in n.Nodes) //each subnode holds the actual data stream details..
                     {
+                        //if (System.Diagnostics.Debugger.IsAttached && (Environment.TickCount - st) > 5000) System.Diagnostics.Debugger.Break();
+                        ni++;
+                        if(ni%10==0) setpb(ni, n.Nodes.Count,2);
+
                         DataBlock db = (DataBlock)nn.Tag;
                         db.DetectType();
                         if (db.DataType != DataBlock.DataTypes.dtBinary)
@@ -157,14 +198,34 @@ namespace Visual_TCPRecon
                     }
                 }
             }
-            
+
+            this.Text = "Pruning tree...";
+            this.Refresh();
             foreach (TreeNode n in rem) tv.Nodes.Remove(n);
              
             lvDNS.Columns[0].Text = "DNS Requests: " + lvDNS.Items.Count;
             lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
             TimeSpan totalTime = (DateTime.Now - startTime);
             this.Text = "  Pcap size: " + FileSizeToHumanReadable(txtPcap.Text) + string.Format("      Processing time: {0} seconds", totalTime.TotalSeconds);
+            pb.Value = 0;
 
+        }
+
+        public void setpb(double cur, double max)
+        {
+            setpb(cur, max,1);
+        }
+
+        public void setpb(double cur, double max, int index)
+        {
+            ProgressBar p = index == 2 ? pb2 : pb;
+            double pcent = cur / max * 100 ;
+            if (Double.IsNaN(pcent)) pcent = 0;
+            if (pcent > 100) pcent = 100;
+            p.Value = (int)pcent;
+            p.Refresh();
+            this.Refresh();
+            Application.DoEvents();
         }
 
         private void DNS(cDNS dns)
@@ -188,11 +249,20 @@ namespace Visual_TCPRecon
             dlg.FileName = System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
             if(dlg.ShowDialog() != DialogResult.OK) return;
             txtPcap.Text = dlg.FileName;
-            btnParse_Click(sender, e);
+
+            FileInfo f = new FileInfo(dlg.FileName);
+            long s1 = f.Length;
+
+            if (s1 > 8000000) //about 8mb
+                    this.Text = "This file is large, consider splitting it into smaller pcaps using Tools menu...";
+            else
+                btnParse_Click(sender, e);
+
         }
 
         private void btnParse_Click(object sender, EventArgs e)
         {
+
 
             string blank = "";
             tv.Nodes.Clear();
@@ -217,11 +287,18 @@ namespace Visual_TCPRecon
             this.Text = "Loading pcap file...";
             this.Refresh();
 
-            ReconManager rm = new ReconManager(NewStream, NewNode, Complete, DNS, capFile, outDir, this);
+            rm = new ReconManager(NewStream, NewNode, Complete, DNS, capFile, outDir, this);
             Thread mThread = new Thread(new ThreadStart(rm.ProcessPcap));
             mThread.IsBackground = true;
             mThread.Start();
+
+
             
+        }
+
+        public void setNodeColor(TreeNode n, int color)
+        {
+            n.BackColor = Color.Red;
         }
 
         private void tv_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -555,12 +632,17 @@ namespace Visual_TCPRecon
             dlg.Filter = "CSharp Script files (*.cs)|*.cs";
             dlg.FileName = "";// System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
 
-            var scriptDir = Path.GetDirectoryName(Application.ExecutablePath);
-            //MessageBox.Show(scriptDir);
-            if (Directory.Exists(scriptDir + "\\visual_tcprecon")) scriptDir = scriptDir + "\\visual_tcprecon";
-            if (Directory.Exists(scriptDir + "\\visual_tcprecon")) scriptDir = scriptDir + "\\visual_tcprecon";
-            if (Directory.Exists(scriptDir + "\\Scripts")) scriptDir = scriptDir + "\\scripts";
-            //MessageBox.Show(scriptDir);
+            string scriptDir = Application.StartupPath;
+
+            if(Directory.Exists(scriptDir + "\\Visual_TCPRecon\\Scripts\\")){
+                scriptDir += "\\Visual_TCPRecon\\Scripts\\";
+            }else{
+                for (int i = 0; i < 5; i++)
+                {
+                    if (!Directory.Exists(scriptDir + "\\Scripts")) scriptDir = Path.GetDirectoryName(scriptDir);
+                }
+                if (Directory.Exists(scriptDir + "\\Scripts")) scriptDir = scriptDir + "\\scripts";
+            }
 
             dlg.InitialDirectory = scriptDir;
             if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -736,11 +818,69 @@ namespace Visual_TCPRecon
            
         }
 
-              
+        private void splitLargePCAPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tcpDump = Application.StartupPath;
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (!File.Exists(tcpDump + "\\tcpdump.exe")) tcpDump = Path.GetDirectoryName(tcpDump);
+            }
+
+            if(!File.Exists(tcpDump + "\\tcpdump.exe")){
+                MessageBox.Show("Could not locate tcpdump in: " + tcpDump);
+                return;
+            }
+
+            tcpDump += "\\tcpdump.exe";
+            
+            dlg.Filter = "Pcap files (*.pcap)|*.pcap";
+            dlg.FileName = txtPcap.Text;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            string inFile = dlg.FileName;
+            string outDir = Path.GetDirectoryName(inFile) + "\\pcap_split\\";
+            if(!Directory.Exists(outDir)) Directory.CreateDirectory(outDir);
+            
+            string outFile = outDir + "\\split.pcap";
+
+            //tcpdump -r old_file -w new_files -C 10
+            ShellAndWait(tcpDump, "-r \"" + inFile + "\" -w \"" + outFile + "\" -C 5");
+
+            string[] files = Directory.GetFiles(outDir);
+            int cnt=0;
+            foreach (string f in files)
+            {
+                if (Path.GetExtension(f) != ".pcap")
+                {
+                    string i = Path.GetExtension(f).Replace(".pcap", "");
+                    string n = Path.GetDirectoryName(f) + "\\split" + i + ".pcap";
+                    if(File.Exists(n)) File.Delete(n);
+                    File.Move(f,n);
+                    cnt++;
+                }
+            }
+            MessageBox.Show("File has been split into " + (cnt+1)  + " segments");
+
+            txtPcap.Text = outDir + "\\split.pcap";
+
+
+        }
+
+        public void ShellAndWait(string binPath, string args)
+        {
+            ProcessStartInfo pInfo = new ProcessStartInfo();
+            pInfo.FileName = binPath;
+            pInfo.Arguments = args;
+            Process p = Process.Start(pInfo);
+            //p.WaitForInputIdle();
+            p.WaitForExit();
+        }
+
 
     }
 
-
+    
     class DummyComponent : IScriptableComponent
     {
         private Form1 f;

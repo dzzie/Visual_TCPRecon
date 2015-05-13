@@ -15,6 +15,10 @@
         public System.Windows.Forms.ListView lvDNS;
         public System.Windows.Forms.ListView lvIPs;
         public System.Windows.Forms.SaveFileDialog saveDlg;
+        public System.Windows.Forms.ProgressBar pb;
+        
+        public void setpb(double cur, double max)
+        
     */
     
     class MyCustomScript : IScript

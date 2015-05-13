@@ -62,6 +62,7 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuCopyTable = new System.Windows.Forms.ToolStripMenuItem();
             this.runScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitLargePCAPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConglomerateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tHexView = new System.Windows.Forms.TabPage();
@@ -80,13 +81,15 @@
             this.copySelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvDNS = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.lvIPs = new System.Windows.Forms.ListView();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.saveDlg = new System.Windows.Forms.SaveFileDialog();
             this.btnParse = new System.Windows.Forms.Button();
-            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pb = new System.Windows.Forms.ProgressBar();
+            this.pb2 = new System.Windows.Forms.ProgressBar();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -331,6 +334,7 @@
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuCopyTable,
             this.runScriptToolStripMenuItem,
+            this.splitLargePCAPToolStripMenuItem,
             this.ConglomerateToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -349,6 +353,13 @@
             this.runScriptToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.runScriptToolStripMenuItem.Text = "Run Script";
             this.runScriptToolStripMenuItem.Click += new System.EventHandler(this.runScriptToolStripMenuItem_Click);
+            // 
+            // splitLargePCAPToolStripMenuItem
+            // 
+            this.splitLargePCAPToolStripMenuItem.Name = "splitLargePCAPToolStripMenuItem";
+            this.splitLargePCAPToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.splitLargePCAPToolStripMenuItem.Text = "Split Large PCAP";
+            this.splitLargePCAPToolStripMenuItem.Click += new System.EventHandler(this.splitLargePCAPToolStripMenuItem_Click);
             // 
             // ConglomerateToolStripMenuItem
             // 
@@ -499,7 +510,7 @@
             this.selectAllToolStripMenuItem,
             this.searchToolStripMenuItem});
             this.mnuLvPopup.Name = "mnuLvPopup";
-            this.mnuLvPopup.Size = new System.Drawing.Size(155, 114);
+            this.mnuLvPopup.Size = new System.Drawing.Size(155, 92);
             // 
             // copySelectedToolStripMenuItem
             // 
@@ -521,6 +532,13 @@
             this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.selectAllToolStripMenuItem.Text = "Select All";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            // 
+            // searchToolStripMenuItem
+            // 
+            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.searchToolStripMenuItem.Text = "Search";
+            this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
             // lvDNS
             // 
@@ -571,18 +589,27 @@
             this.btnParse.UseVisualStyleBackColor = true;
             this.btnParse.Click += new System.EventHandler(this.btnParse_Click);
             // 
-            // searchToolStripMenuItem
+            // pb
             // 
-            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.searchToolStripMenuItem.Text = "Search";
-            this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
+            this.pb.Location = new System.Drawing.Point(680, 36);
+            this.pb.Name = "pb";
+            this.pb.Size = new System.Drawing.Size(494, 13);
+            this.pb.TabIndex = 14;
+            // 
+            // pb2
+            // 
+            this.pb2.Location = new System.Drawing.Point(680, 52);
+            this.pb2.Name = "pb2";
+            this.pb2.Size = new System.Drawing.Size(495, 15);
+            this.pb2.TabIndex = 15;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1187, 761);
+            this.Controls.Add(this.pb2);
+            this.Controls.Add(this.pb);
             this.Controls.Add(this.btnParse);
             this.Controls.Add(this.lvIPs);
             this.Controls.Add(this.lvDNS);
@@ -677,6 +704,9 @@
         private System.Windows.Forms.TabPage Details;
         private System.Windows.Forms.TextBox txtDetails;
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
+        public System.Windows.Forms.ProgressBar pb;
+        private System.Windows.Forms.ToolStripMenuItem splitLargePCAPToolStripMenuItem;
+        public System.Windows.Forms.ProgressBar pb2;
     }
 }
 

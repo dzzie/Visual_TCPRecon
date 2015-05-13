@@ -28,8 +28,7 @@ namespace Visual_TCPRecon
         private Form1 owner;
         private List<string> ips = new List<string>(); //all ip's seen
         private TCPPacket curPacket;
-        private long firstTimeStamp_s = 0;
-        private long firstTimeStamp_ms;
+        private decimal firstTimeStamp = 0;
 
         static Dictionary<Connection, TcpRecon> sharpPcapDict = new Dictionary<Connection, TcpRecon>();
 
@@ -69,9 +68,18 @@ namespace Visual_TCPRecon
             DataBlock db = new DataBlock(recon.dumpFile, startAt, endAt - startAt, recon);
             db.EpochTimeStamp = curPacket.PcapHeader.Seconds.ToString() + "." + curPacket.PcapHeader.MicroSeconds.ToString();
 
-            long hi = (long)curPacket.PcapHeader.Seconds - firstTimeStamp_s;
+            /*string fu = firstTimeStamp_s.ToString() + "." + firstTimeStamp_ms.ToString();
+            string fu2 = firstpacketTimeStamp_s.ToString() + "." + firstpacketTimeStamp_ms.ToString();
+            decimal tmp = decimal.Parse(fu);
+            decimal temp2 = decimal.Parse(fu2);
+            decimal x = temp2 - tmp;
+            db.relativeTimeStamp = x.ToString();
+            firstpacketTimeStamp_s = 0;*/
+
+            /*long hi = (long)curPacket.PcapHeader.Seconds - firstTimeStamp_s;
             long low = (long)curPacket.PcapHeader.MicroSeconds - firstTimeStamp_ms;
             db.relativeTimeStamp = hi.ToString() + "." + low.ToString();
+            */
 
             owner.Invoke(NewNode, db); 
 
@@ -100,10 +108,9 @@ namespace Visual_TCPRecon
         private void device_PcapOnPacketArrival(object sender, Packet packet)
         {
 
-            if (firstTimeStamp_s == 0)
+            if (firstTimeStamp == 0)
             {
-                firstTimeStamp_s = packet.Timeval.Seconds;
-                firstTimeStamp_ms = packet.Timeval.MicroSeconds;
+                firstTimeStamp = decimal.Parse(packet.Timeval.Seconds.ToString() + "." + packet.Timeval.MicroSeconds.ToString());
             }
 
             if (packet is UDPPacket)
@@ -125,9 +132,8 @@ namespace Visual_TCPRecon
                 recon = new TcpRecon(c.fileName);
                 recon.LastSourcePort = tcpPacket.SourcePort;
                 recon.StreamStartTimeStamp = packet.PcapHeader.Seconds.ToString() + "." + packet.PcapHeader.MicroSeconds.ToString();
-                long hi = (long)packet.PcapHeader.Seconds - firstTimeStamp_s;
-                long low = (long)packet.PcapHeader.MicroSeconds - firstTimeStamp_ms;
-                recon.relativeTimeStamp = hi.ToString() + "." + low.ToString();
+                decimal curTime = decimal.Parse(recon.StreamStartTimeStamp);
+                recon.relativeTimeStamp = (curTime - firstTimeStamp).ToString();
 
                 sharpPcapDict.Add(c, recon);
                 if (!IPExists("tcp: " + tcpPacket.DestinationAddress)) ips.Add("tcp: " + tcpPacket.DestinationAddress);
@@ -164,6 +170,7 @@ namespace Visual_TCPRecon
             catch (Exception ex)
             {
                 ErrorMessage = "Error Loading pcap with SharpPcap: " + ex.Message;
+                owner.Invoke(Complete, ips);
                 return; 
             }
 

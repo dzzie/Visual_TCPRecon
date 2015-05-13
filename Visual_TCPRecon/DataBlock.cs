@@ -48,7 +48,7 @@ namespace Visual_TCPRecon
             t += "\r\nendOffset: " + endOffset.ToString("X");
             t += "\r\nlength: " + length.ToString();
             t += "\r\nlast packet EpochTimeStamp: " + EpochTimeStamp;
-            t += "\r\nlast packet relativeTimeStamp: " + relativeTimeStamp;
+            //t += "\r\nlast packet relativeTimeStamp: " + relativeTimeStamp;
             return t;
         }
 
