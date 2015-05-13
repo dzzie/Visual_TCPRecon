@@ -123,7 +123,7 @@
     </Compile>
     <Compile Include="ReconManager.cs" />
     <Compile Include="scriptHelper.cs" />
-    <Compile Include="Scripts\SQLi_Scan.cs">
+    <Compile Include="Scripts\Exploit_Scan.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TcpRecon.cs" />

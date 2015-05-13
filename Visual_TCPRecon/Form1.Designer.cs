@@ -170,7 +170,7 @@
             this.expandAllToolStripMenuItem,
             this.renameIPToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 258);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 280);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -191,6 +191,7 @@
             this.removeUncheckedStreamsToolStripMenuItem.Name = "removeUncheckedStreamsToolStripMenuItem";
             this.removeUncheckedStreamsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.removeUncheckedStreamsToolStripMenuItem.Text = "Remove Unchecked Streams";
+            this.removeUncheckedStreamsToolStripMenuItem.Click += new System.EventHandler(this.removeUncheckedStreamsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 

@@ -22,9 +22,12 @@ it also auto extracts all:
    http web requests
 
 the hexed.ocx control will have to be registered on your system using the following 
-command:
+command: 
 
 regsvr32 hexed.ocx
+
+note you must use the 32bit version of cmd.exe to run this command! if in doubt
+Just install PDF stream dumper and it will do it for you.
 
 Another project i stumbled across while looking for dns parsing code 
 is Network Miner. Its open source and written in C#. Looks like its worth

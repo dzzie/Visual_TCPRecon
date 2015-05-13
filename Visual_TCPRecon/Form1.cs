@@ -128,7 +128,7 @@ namespace Visual_TCPRecon
                 foreach (TreeNode n in tv.Nodes)
                 {
                     ii++;
-                    if (ii % 100 == 0) setpb(ii, tv.Nodes.Count);
+                    if (ii % 2 == 0) setpb(ii, tv.Nodes.Count);
 
                     foreach (TreeNode n2 in tv.Nodes)
                     {
@@ -156,7 +156,7 @@ namespace Visual_TCPRecon
             foreach (TreeNode n in tv.Nodes)//parent node shows stream info..
             {
                 ii++;
-                if (ii % 10 == 0) setpb(ii, tv.Nodes.Count);
+                if (ii % 2 == 0) setpb(ii, tv.Nodes.Count);
                 int st = Environment.TickCount;
 
                 if (n.Nodes.Count == 0)
@@ -246,6 +246,14 @@ namespace Visual_TCPRecon
 
         private void btnBrowsePcap_Click(object sender, EventArgs e)
         {
+            if (txtPcap.Text.Length > 0)
+            {
+                try
+                {
+                    dlg.InitialDirectory = Path.GetDirectoryName(txtPcap.Text);
+                }
+                catch (Exception ee) { ;}
+            }
             dlg.Filter = "Pcap files (*.pcap)|*.pcap";
             dlg.FileName = System.Diagnostics.Debugger.IsAttached ? "test.pcap" : "";
             if(dlg.ShowDialog() != DialogResult.OK) return;
@@ -299,7 +307,7 @@ namespace Visual_TCPRecon
 
         public void setNodeColor(TreeNode n, int color)
         {
-            n.BackColor = Color.Red;
+            if (color == 1) n.BackColor = Color.Red; else n.BackColor = Color.Yellow;
         }
 
         private void tv_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -354,27 +362,34 @@ namespace Visual_TCPRecon
 
         private void removeStreamToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            for( int ndx = tv.Nodes.Count; ndx > 0; ndx--)
+            for (int ndx = tv.Nodes.Count; ndx > 0; ndx--)
             {
-              TreeNode node = tv.Nodes[ndx-1];
-              if (node.Checked)
-              {
-                  foreach (TreeNode nn in node.Nodes)
-                  {
-                      foreach (ListViewItem li in lv.Items)
-                      {
-                          TreeNode n = (TreeNode)li.Tag;
-                          if (n == nn)
-                          {
-                              lv.Items.Remove(li);
-                              break;
-                          }
-                      }
-                  }
-                  tv.Nodes.Remove(node);
-              }
+                TreeNode node = tv.Nodes[ndx - 1];
+                bool parentSelected = node.Checked;
+
+                for (int ndx2 = node.Nodes.Count; ndx2 > 0; ndx2--)
+                {
+                    TreeNode nn = node.Nodes[ndx2 - 1];
+                    if (nn.Checked || parentSelected)
+                    {
+                        foreach (ListViewItem li in lv.Items)
+                        {
+                            TreeNode n = (TreeNode)li.Tag;
+                            if (n == nn)
+                            {
+                                lv.Items.Remove(li);
+                                break;
+                            }
+                        }
+                        nn.Remove();
+                    }
+                }
+                if (node.Nodes.Count==0) tv.Nodes.Remove(node); //no children left..remove it..
+                
             }
             lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
+            if (txtFilter.Text.Length > 0) txtFilter_TextChanged(null, null);
+
         }
 
         private void extractStreamsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -927,6 +942,41 @@ namespace Visual_TCPRecon
             }
             catch (Exception ex) { }
 
+        }
+
+        private void removeUncheckedStreamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            for (int ndx = tv.Nodes.Count; ndx > 0; ndx--)
+            {
+                TreeNode node = tv.Nodes[ndx - 1];
+                bool removeParent = true;
+
+                if (!node.Checked)
+                {
+                    for (int ndx2 = node.Nodes.Count; ndx2 > 0; ndx2--)
+                    {
+                        TreeNode nn = node.Nodes[ndx2 - 1];
+                        if (nn.Checked) removeParent = false;
+                        if (!nn.Checked)
+                        {
+                            foreach (ListViewItem li in lv.Items)
+                            {
+                                TreeNode n = (TreeNode)li.Tag;
+                                if (n == nn)
+                                {
+                                    lv.Items.Remove(li);
+                                    break;
+                                }
+                            }
+                            nn.Remove();
+                        }
+                    }
+                    if(removeParent) tv.Nodes.Remove(node);
+                }
+            }
+            lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
+            if (txtFilter.Text.Length > 0) txtFilter_TextChanged(null, null);
         }
 
 
