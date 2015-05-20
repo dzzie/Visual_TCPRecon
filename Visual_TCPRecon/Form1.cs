@@ -14,7 +14,7 @@ using System.Threading;
 using Microsoft.VisualBasic;
 using Visual_TCPRecon.Interfaces;
 using System.Diagnostics;
-using System.Drawing;
+using System.IO.Compression;
 
 /*
  *  This code was modified by dzzie@yahoo.com from the base at:
@@ -978,6 +978,84 @@ namespace Visual_TCPRecon
             lv.Columns[0].Text = "Web Requests: " + lv.Items.Count;
             if (txtFilter.Text.Length > 0) txtFilter_TextChanged(null, null);
         }
+
+        public void DecompressFile()
+        {
+
+            dlg.Filter = "All files (*.*)|*.*";
+            dlg.FileName = "";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            string inFile = dlg.FileName;
+            string outDir = Path.GetDirectoryName(inFile);
+            string outFile = outDir + "\\" + Path.GetFileNameWithoutExtension(dlg.FileName) + ".decomp";
+
+
+            byte[] gzip = File.ReadAllBytes(inFile);
+
+            try
+            {
+                // Create a GZIP stream with decompression mode.
+                // ... Then create a buffer and write into while reading from the GZIP stream.
+                using (GZipStream stream = new GZipStream(new MemoryStream(gzip), CompressionMode.Decompress))
+                {
+                    const int size = 4096;
+                    byte[] buffer = new byte[size];
+                    using (MemoryStream memory = new MemoryStream())
+                    {
+                        int count = 0;
+                        do
+                        {
+                            count = stream.Read(buffer, 0, size);
+                            if (count > 0)
+                            {
+                                memory.Write(buffer, 0, count);
+                            }
+                        }
+                        while (count > 0);
+                        //return memory.ToArray();
+                        File.WriteAllBytes(outFile, memory.ToArray());
+                        MessageBox.Show("Decompression success");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error decompressing stream?");
+            }
+
+
+        }
+
+        private void gZIPDecompressFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DecompressFile();
+        }
+
+        private void unchunkExportedBlockToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tcpDump = Application.StartupPath;
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (!File.Exists(tcpDump + "\\unchunk.exe")) tcpDump = Path.GetDirectoryName(tcpDump);
+            }
+
+            if (!File.Exists(tcpDump + "\\unchunk.exe"))
+            {
+                MessageBox.Show("Could not locate unchunk.exe in: " + tcpDump);
+                return;
+            }
+
+            tcpDump += "\\unchunk.exe";
+
+            ProcessStartInfo pInfo = new ProcessStartInfo();
+            pInfo.FileName = tcpDump;
+            Process p = Process.Start(pInfo);
+
+
+        }
+
 
 
     }

@@ -64,6 +64,7 @@
             this.runScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitLargePCAPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConglomerateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gZIPDecompressFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tHexView = new System.Windows.Forms.TabPage();
             this.he = new Axrhexed.AxHexEd();
@@ -94,6 +95,7 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.lv = new System.Windows.Forms.ListView();
             this.WebRequests = new System.Windows.Forms.ColumnHeader();
+            this.unchunkExportedBlockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -170,7 +172,7 @@
             this.expandAllToolStripMenuItem,
             this.renameIPToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 280);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 258);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -340,7 +342,9 @@
             this.mnuCopyTable,
             this.runScriptToolStripMenuItem,
             this.splitLargePCAPToolStripMenuItem,
-            this.ConglomerateToolStripMenuItem});
+            this.ConglomerateToolStripMenuItem,
+            this.gZIPDecompressFileToolStripMenuItem,
+            this.unchunkExportedBlockToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -372,6 +376,13 @@
             this.ConglomerateToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.ConglomerateToolStripMenuItem.Text = "Conglomerate Streams by Dest IP:Port";
             this.ConglomerateToolStripMenuItem.Click += new System.EventHandler(this.seperToolStripMenuItem_Click);
+            // 
+            // gZIPDecompressFileToolStripMenuItem
+            // 
+            this.gZIPDecompressFileToolStripMenuItem.Name = "gZIPDecompressFileToolStripMenuItem";
+            this.gZIPDecompressFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.gZIPDecompressFileToolStripMenuItem.Text = "GZIP Decompress File";
+            this.gZIPDecompressFileToolStripMenuItem.Click += new System.EventHandler(this.gZIPDecompressFileToolStripMenuItem_Click);
             // 
             // tabs
             // 
@@ -645,6 +656,13 @@
             this.WebRequests.Text = "Web Requests";
             this.WebRequests.Width = 800;
             // 
+            // unchunkExportedBlockToolStripMenuItem
+            // 
+            this.unchunkExportedBlockToolStripMenuItem.Name = "unchunkExportedBlockToolStripMenuItem";
+            this.unchunkExportedBlockToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.unchunkExportedBlockToolStripMenuItem.Text = "unchunk exported block";
+            this.unchunkExportedBlockToolStripMenuItem.Click += new System.EventHandler(this.unchunkExportedBlockToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -756,6 +774,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         public System.Windows.Forms.ListView lv;
         private System.Windows.Forms.ColumnHeader WebRequests;
+        private System.Windows.Forms.ToolStripMenuItem gZIPDecompressFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unchunkExportedBlockToolStripMenuItem;
     }
 }
 
