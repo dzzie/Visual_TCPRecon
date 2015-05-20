@@ -130,13 +130,19 @@ namespace Visual_TCPRecon
                     byte[] buf = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, b2, 0, b2.Length);
                     ret = HttpHeader + Encoding.UTF8.GetString(buf, 0, buf.Length);
                 }
-                catch (Exception ex) {}
+                catch (Exception ex) {
+                    ret = AsString();
+                }
             }
             else
             {
                 ret = AsString();
             }
 
+           /* if(ret.IndexOf("\x0") > 0){ //isbinary 
+                if(this.HttpHeader.Length > 0) ret = this.HttpHeader + "\r\n\r\n[Binary data]";
+            }*/
+             
             if (iLoaded) FreeData();
             return ret;
 

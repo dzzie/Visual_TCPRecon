@@ -1,16 +1,28 @@
 VERSION 5.00
 Begin VB.Form Form1 
-   Caption         =   "Form1"
+   BorderStyle     =   1  'Fixed Single
+   Caption         =   "unchunk extracted data stream"
    ClientHeight    =   3765
-   ClientLeft      =   60
-   ClientTop       =   345
+   ClientLeft      =   45
+   ClientTop       =   330
    ClientWidth     =   8310
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
    ScaleHeight     =   3765
    ScaleWidth      =   8310
    StartUpPosition =   2  'CenterScreen
    Begin VB.ListBox List1 
-      Height          =   2985
+      BeginProperty Font 
+         Name            =   "Courier"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   2940
       Left            =   90
       TabIndex        =   4
       Top             =   630
@@ -56,13 +68,15 @@ Attribute VB_Exposed = False
 Dim dlg As New clsCmnDlg2
 Dim fso As New CFileSystem2
 Dim chunk As Long
+Public defPath As String
 
 Private Sub Command1_Click()
-    Text1 = dlg.OpenDialog(AllFiles)
+    Text1 = dlg.OpenDialog(AllFiles, defPath, , Me.hWnd)
     If Len(Text1) = 0 Then Exit Sub
+    Command2_Click
 End Sub
 
-Private Sub Command2_Click()
+Public Sub Command2_Click()
     
     chunk = 0
     List1.Clear
@@ -118,6 +132,7 @@ Private Sub Command2_Click()
         Get f, , b()
         Put f2, , b()
         List1.AddItem "start: " & Hex(b(0)) & " end: " & Hex(b(UBound(b)))
+        chunk = chunk + 1
     Loop
         
     Close f

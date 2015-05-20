@@ -191,6 +191,7 @@ namespace Visual_TCPRecon
                             else
                             {//we have some extra display room with just short HTTP response code, so lets use it..
                                 nn.Text = "   " + nn.Text + string.Format("   - 0x{0:x} bytes", db.length);
+                                if (db.isChunked) nn.Text += " chunked ";
                                 if (db.isGZip) nn.Text += " w/gzip";
                             }
                         }
@@ -1051,6 +1052,19 @@ namespace Visual_TCPRecon
 
             ProcessStartInfo pInfo = new ProcessStartInfo();
             pInfo.FileName = tcpDump;
+
+            try
+            {
+                pInfo.Arguments = Path.GetDirectoryName(txtPcap.Text);
+            }
+            catch (Exception ex) {
+                /*
+                   this is the piddley shit throw an error over everything crap i hate about 
+                   .net. also this is where on error resume next is very useful....
+                   who the fuck cares if this fails due to bad path or empty or whatever
+                 */
+            }
+
             Process p = Process.Start(pInfo);
 
 
