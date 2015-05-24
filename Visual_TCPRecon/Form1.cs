@@ -308,7 +308,12 @@ namespace Visual_TCPRecon
 
         public void setNodeColor(TreeNode n, int color)
         {
-            if (color == 1) n.BackColor = Color.Red; else n.BackColor = Color.Yellow;
+            switch (color)
+            {
+                case 1: n.BackColor = Color.Red; break;
+                case 2: n.BackColor = Color.Yellow; break;
+                case 3: n.BackColor = Color.White; break;
+            }
         }
 
         private void tv_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -1068,6 +1073,67 @@ namespace Visual_TCPRecon
             Process p = Process.Start(pInfo);
 
 
+        }
+
+        private void searchContentBodyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pb.Value = 0;
+            pb2.Value = 0;
+            int i = 0, j = 0;
+
+            string match = InputBox("Search for");
+            if (match.Length == 0) return;
+            FrmList fl = new FrmList();
+            fl.parent = this;
+            fl.lv.Items.Clear();
+            
+            foreach (TreeNode n in tv.Nodes)
+            {
+                i++;
+                setpb(i, tv.Nodes.Count, 1);
+                n.Checked = false;
+
+                foreach (TreeNode nn in n.Nodes)
+                {
+                    j++;
+                    setpb(j, n.Nodes.Count, 2);
+                    nn.Checked = false;
+
+                    DataBlock db = (DataBlock)nn.Tag;
+                    if (db.LoadData())
+                    {
+                        string body = db.HttpHeader + "\r\n\r\n" + db.GetBody();
+
+                        if (body.IndexOf(match, StringComparison.CurrentCultureIgnoreCase) > 0)
+                        {
+                            string txt = db.HttpFirstLine;
+                            if (txt.Length == 0) txt = "Data: " + body.Length.ToString();
+                            setNodeColor(nn, 1);
+                            setNodeColor(n, 2);
+                            nn.Checked = true;
+                            ListViewItem li2 = fl.lv.Items.Add(txt);
+                            li2.Tag = nn;
+                        }
+
+                        db.FreeData();
+                    }
+                }
+            }
+            pb.Value = 0;
+            pb2.Value = 0;
+            fl.Show();
+        }
+
+        private void resetColorsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (TreeNode n in tv.Nodes)
+            {
+                n.BackColor = Color.White;
+                foreach (TreeNode nn in n.Nodes)
+                {
+                    nn.BackColor = Color.White;
+                }
+            }
         }
 
 

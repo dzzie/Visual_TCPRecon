@@ -65,6 +65,8 @@
             this.splitLargePCAPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConglomerateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gZIPDecompressFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unchunkExportedBlockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchContentBodyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tHexView = new System.Windows.Forms.TabPage();
             this.he = new Axrhexed.AxHexEd();
@@ -95,7 +97,7 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.lv = new System.Windows.Forms.ListView();
             this.WebRequests = new System.Windows.Forms.ColumnHeader();
-            this.unchunkExportedBlockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetColorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -170,9 +172,10 @@
             this.toolStripMenuItem1,
             this.collapseTreeToolStripMenuItem,
             this.expandAllToolStripMenuItem,
-            this.renameIPToolStripMenuItem});
+            this.renameIPToolStripMenuItem,
+            this.resetColorsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 258);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 302);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -344,7 +347,8 @@
             this.splitLargePCAPToolStripMenuItem,
             this.ConglomerateToolStripMenuItem,
             this.gZIPDecompressFileToolStripMenuItem,
-            this.unchunkExportedBlockToolStripMenuItem});
+            this.unchunkExportedBlockToolStripMenuItem,
+            this.searchContentBodyToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -383,6 +387,20 @@
             this.gZIPDecompressFileToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.gZIPDecompressFileToolStripMenuItem.Text = "GZIP Decompress File";
             this.gZIPDecompressFileToolStripMenuItem.Click += new System.EventHandler(this.gZIPDecompressFileToolStripMenuItem_Click);
+            // 
+            // unchunkExportedBlockToolStripMenuItem
+            // 
+            this.unchunkExportedBlockToolStripMenuItem.Name = "unchunkExportedBlockToolStripMenuItem";
+            this.unchunkExportedBlockToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.unchunkExportedBlockToolStripMenuItem.Text = "unchunk exported block";
+            this.unchunkExportedBlockToolStripMenuItem.Click += new System.EventHandler(this.unchunkExportedBlockToolStripMenuItem_Click);
+            // 
+            // searchContentBodyToolStripMenuItem
+            // 
+            this.searchContentBodyToolStripMenuItem.Name = "searchContentBodyToolStripMenuItem";
+            this.searchContentBodyToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.searchContentBodyToolStripMenuItem.Text = "Search Content Body";
+            this.searchContentBodyToolStripMenuItem.Click += new System.EventHandler(this.searchContentBodyToolStripMenuItem_Click);
             // 
             // tabs
             // 
@@ -623,7 +641,7 @@
             this.lvFiltered.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3});
             this.lvFiltered.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lvFiltered.Location = new System.Drawing.Point(791, 643);
+            this.lvFiltered.Location = new System.Drawing.Point(704, 607);
             this.lvFiltered.Name = "lvFiltered";
             this.lvFiltered.Size = new System.Drawing.Size(377, 104);
             this.lvFiltered.TabIndex = 17;
@@ -656,21 +674,21 @@
             this.WebRequests.Text = "Web Requests";
             this.WebRequests.Width = 800;
             // 
-            // unchunkExportedBlockToolStripMenuItem
+            // resetColorsToolStripMenuItem
             // 
-            this.unchunkExportedBlockToolStripMenuItem.Name = "unchunkExportedBlockToolStripMenuItem";
-            this.unchunkExportedBlockToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.unchunkExportedBlockToolStripMenuItem.Text = "unchunk exported block";
-            this.unchunkExportedBlockToolStripMenuItem.Click += new System.EventHandler(this.unchunkExportedBlockToolStripMenuItem_Click);
+            this.resetColorsToolStripMenuItem.Name = "resetColorsToolStripMenuItem";
+            this.resetColorsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.resetColorsToolStripMenuItem.Text = "Reset Colors";
+            this.resetColorsToolStripMenuItem.Click += new System.EventHandler(this.resetColorsToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1187, 761);
-            this.Controls.Add(this.lvFiltered);
             this.Controls.Add(this.txtFilter);
             this.Controls.Add(this.lblFilter);
+            this.Controls.Add(this.lvFiltered);
             this.Controls.Add(this.pb2);
             this.Controls.Add(this.lv);
             this.Controls.Add(this.pb);
@@ -776,6 +794,8 @@
         private System.Windows.Forms.ColumnHeader WebRequests;
         private System.Windows.Forms.ToolStripMenuItem gZIPDecompressFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unchunkExportedBlockToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchContentBodyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetColorsToolStripMenuItem;
     }
 }
 
