@@ -1,7 +1,14 @@
 
 This is a visual tcp reconstruction tool for pcaps.
 
-Load a pcap, it will parse it into communication streams
+The way I generally use this is as follows:
+
+1) take a packet capture with wireshark
+2) filter the pcap to hosts of interest to get decent size
+3) save as a classic .pcap file 
+4) load in visual_tcprecon for data exploration and file extraction
+
+When you load a pcap, it will parse it into communication streams
 each host:port pair gets it own node. Under this node each
 leg of the communication will get its own sub node. 
 

@@ -54,6 +54,7 @@ namespace Visual_TCPRecon
             InitializeComponent();
             Form1_Resize(null, null);
             lv.ContextMenuStrip = mnuLvPopup;
+            lvFiltered.ContextMenuStrip = mnuLvPopup;
             lvDNS.ContextMenuStrip = mnuLvPopup;
             lvIPs.ContextMenuStrip = mnuLvPopup;
         }
