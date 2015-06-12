@@ -57,6 +57,17 @@ namespace Visual_TCPRecon
             lvFiltered.ContextMenuStrip = mnuLvPopup;
             lvDNS.ContextMenuStrip = mnuLvPopup;
             lvIPs.ContextMenuStrip = mnuLvPopup;
+
+            string[] args = Environment.GetCommandLineArgs();
+            foreach (string a in args)
+            {
+                if (File.Exists(a) && Path.GetExtension(a).ToLower() == ".pcap")
+                {
+                    txtPcap.Text = a;
+                    btnParse_Click(null,null);
+                    break;
+                }
+            }
         }
 
         //#region reconManager callbacks
@@ -279,6 +290,9 @@ namespace Visual_TCPRecon
             tv.Nodes.Clear();
             he.LoadString(ref blank);
             lv.Items.Clear();
+            lvIPs.Items.Clear();
+            lvFiltered.Items.Clear();
+            lvDNS.Items.Clear();
 
             startTime = DateTime.Now;        
 
@@ -653,7 +667,10 @@ namespace Visual_TCPRecon
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (File.Exists(Visual_TCPRecon.Properties.Settings.Default.lastPath)) txtPcap.Text = Visual_TCPRecon.Properties.Settings.Default.lastPath;
+            if (txtPcap.Text.Length == 0)
+            { //no command line args..
+                if (File.Exists(Visual_TCPRecon.Properties.Settings.Default.lastPath)) txtPcap.Text = Visual_TCPRecon.Properties.Settings.Default.lastPath;
+            }
             ConglomerateToolStripMenuItem.Checked = Visual_TCPRecon.Properties.Settings.Default.byPort;
              
         }

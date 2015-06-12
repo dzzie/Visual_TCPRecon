@@ -57,6 +57,7 @@
             this.collapseTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetColorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,7 +98,6 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.lv = new System.Windows.Forms.ListView();
             this.WebRequests = new System.Windows.Forms.ColumnHeader();
-            this.resetColorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -175,7 +175,7 @@
             this.renameIPToolStripMenuItem,
             this.resetColorsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 302);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 280);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -327,6 +327,13 @@
             this.renameIPToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.renameIPToolStripMenuItem.Text = "Rename IP";
             this.renameIPToolStripMenuItem.Click += new System.EventHandler(this.renameIPToolStripMenuItem_Click);
+            // 
+            // resetColorsToolStripMenuItem
+            // 
+            this.resetColorsToolStripMenuItem.Name = "resetColorsToolStripMenuItem";
+            this.resetColorsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.resetColorsToolStripMenuItem.Text = "Reset Colors";
+            this.resetColorsToolStripMenuItem.Click += new System.EventHandler(this.resetColorsToolStripMenuItem_Click);
             // 
             // menuStrip1
             // 
@@ -674,13 +681,6 @@
             this.WebRequests.Text = "Web Requests";
             this.WebRequests.Width = 800;
             // 
-            // resetColorsToolStripMenuItem
-            // 
-            this.resetColorsToolStripMenuItem.Name = "resetColorsToolStripMenuItem";
-            this.resetColorsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.resetColorsToolStripMenuItem.Text = "Reset Colors";
-            this.resetColorsToolStripMenuItem.Click += new System.EventHandler(this.resetColorsToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -701,6 +701,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnBrowsePcap);
             this.Controls.Add(this.txtPcap);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Visual TCPRecon";
