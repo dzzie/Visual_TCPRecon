@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using VTcpRecon;
-using Tamir.IPLib.Packets;
-using Tamir.IPLib;
+//using Tamir.IPLib.Packets;
+//using Tamir.IPLib;
+using SharpPcap.WinPcap;
+using SharpPcap.LibPcap;
+using PacketDotNet;
 using System.IO;
 using System.Threading;
+using SharpPcap;
+
 
 //there is some ugliness in this file in the way you have to process and conglomerate packets and only
 //know so after the next packet has already been processed. This class hides those details from the
@@ -27,8 +32,12 @@ namespace Visual_TCPRecon
         static string capFile = "";
         private Form1 owner;
         private List<string> ips = new List<string>(); //all ip's seen
-        private TCPPacket curPacket;
+        private TcpPacket curPacket;
+        private PosixTimeval curPacketTime;
         private decimal firstTimeStamp = 0;
+
+        public uint totalPackets =0;
+        public uint totalTCPPackets = 0;
 
         static Dictionary<Connection, TcpRecon> sharpPcapDict = new Dictionary<Connection, TcpRecon>();
 
@@ -66,7 +75,8 @@ namespace Visual_TCPRecon
             if (recon.isComplete) endAt =(int)recon.CurrentOffset;
 
             DataBlock db = new DataBlock(recon.dumpFile, startAt, endAt - startAt, recon);
-            db.EpochTimeStamp = curPacket.PcapHeader.Seconds.ToString() + "." + curPacket.PcapHeader.MicroSeconds.ToString();
+
+            db.EpochTimeStamp = curPacketTime.Seconds.ToString() + "." + curPacketTime.MicroSeconds.ToString();
 
             /*string fu = firstTimeStamp_s.ToString() + "." + firstTimeStamp_ms.ToString();
             string fu2 = firstpacketTimeStamp_s.ToString() + "." + firstpacketTimeStamp_ms.ToString();
@@ -89,13 +99,15 @@ namespace Visual_TCPRecon
         private void HandleDNS(Packet packet)
         {
             //right now we are only passing up dns requests where we were able to extract the name
-            UDPPacket udp = (UDPPacket)packet;
-            if (!IPExists("udp: "+udp.DestinationAddress)) ips.Add("udp: "+udp.DestinationAddress);
-            if (!IPExists("udp: "+udp.SourceAddress)) ips.Add("udp: "+udp.SourceAddress);
+            UdpPacket udp = (UdpPacket)packet;
+            IpPacket ipPacket = (IpPacket)packet.ParentPacket;
+
+            if (!IPExists("udp: " + ipPacket.DestinationAddress)) ips.Add("udp: " + ipPacket.DestinationAddress);
+            if (!IPExists("udp: " + ipPacket.SourceAddress)) ips.Add("udp: " + ipPacket.SourceAddress);
 
             if (udp.DestinationPort == 53) //its a request
             {
-                cDNS dns = new cDNS(udp.UDPData);
+                cDNS dns = new cDNS(udp.PayloadData);
                 if (!dns.isResponse && dns.dnsName.Length > 0)
                 {
                     owner.Invoke(DNS, dns); 
@@ -105,39 +117,50 @@ namespace Visual_TCPRecon
         }
 
         // The callback function for the SharpPcap library
-        private void device_PcapOnPacketArrival(object sender, Packet packet)
+        private void device_PcapOnPacketArrival(object sender, CaptureEventArgs e)
         {
+
+            var packet = PacketDotNet.Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
+            var eth = ((PacketDotNet.EthernetPacket)packet);
+            var ip = PacketDotNet.IpPacket.GetEncapsulated(packet);
+            var tcp = PacketDotNet.TcpPacket.GetEncapsulated(packet);
 
             if (firstTimeStamp == 0)
             {
-                firstTimeStamp = decimal.Parse(packet.Timeval.Seconds.ToString() + "." + packet.Timeval.MicroSeconds.ToString());
+                firstTimeStamp = decimal.Parse(e.Packet.Timeval.Seconds.ToString() + "." + e.Packet.Timeval.MicroSeconds.ToString());
             }
 
-            if (packet is UDPPacket)
+            totalPackets++;
+            if (packet is UdpPacket)
             {
                 HandleDNS(packet);
                 return;
             }
             
-            if (!(packet is TCPPacket)) return;
-
-            TCPPacket tcpPacket = (TCPPacket)packet;
+            IpPacket  ipPacket  = (IpPacket)packet.Extract(typeof(IpPacket));
+            TcpPacket tcpPacket = (TcpPacket)packet.Extract(typeof(TcpPacket));
+            
+            if (tcpPacket == null) return;
+            totalTCPPackets++;
+            
             Connection c = new Connection(tcpPacket);
             TcpRecon recon = null;
             curPacket = tcpPacket;
+            curPacketTime = e.Packet.Timeval;
 
             if (!sharpPcapDict.ContainsKey(c))
             {
                 c.generateFileName(outDir);
                 recon = new TcpRecon(c.fileName);
                 recon.LastSourcePort = tcpPacket.SourcePort;
-                recon.StreamStartTimeStamp = packet.PcapHeader.Seconds.ToString() + "." + packet.PcapHeader.MicroSeconds.ToString();
+                recon.StreamStartTimeStamp = e.Packet.Timeval.Seconds.ToString() + "." + e.Packet.Timeval.MicroSeconds.ToString();
                 decimal curTime = decimal.Parse(recon.StreamStartTimeStamp);
                 recon.relativeTimeStamp = (curTime - firstTimeStamp).ToString();
 
                 sharpPcapDict.Add(c, recon);
-                if (!IPExists("tcp: " + tcpPacket.DestinationAddress)) ips.Add("tcp: " + tcpPacket.DestinationAddress);
-                if (!IPExists("tcp: " + tcpPacket.SourceAddress)) ips.Add("tcp: " + tcpPacket.SourceAddress);
+
+                if (!IPExists("tcp: " + ipPacket.DestinationAddress)) ips.Add("tcp: " + ipPacket.DestinationAddress);
+                if (!IPExists("tcp: " + ipPacket.SourceAddress)) ips.Add("tcp: " + ipPacket.SourceAddress);
                 owner.Invoke(NewStream, recon); 
             }else{
                 recon = sharpPcapDict[c];
@@ -161,11 +184,13 @@ namespace Visual_TCPRecon
 
             sharpPcapDict = new Dictionary<Connection, TcpRecon>();
             PcapDevice device;
+            totalPackets = 0;
+            totalTCPPackets = 0;
 
             try
             {
-                device = SharpPcap.GetPcapOfflineDevice(capFile);
-                device.PcapOpen();
+                device  = new SharpPcap.LibPcap.CaptureFileReaderDevice(capFile);
+                device.Open();
             }
             catch (Exception ex)
             {
@@ -174,10 +199,10 @@ namespace Visual_TCPRecon
                 return; 
             }
 
-            device.PcapOnPacketArrival += new SharpPcap.PacketArrivalEvent(device_PcapOnPacketArrival);
-            device.PcapCapture(SharpPcap.INFINITE); //parse entire pcap until EOF
-            device.PcapClose();
-
+            device.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(device_PcapOnPacketArrival);
+            device.Capture(); //parse entire pcap until EOF
+            device.Close();
+                
             foreach (TcpRecon tr in sharpPcapDict.Values)
             {
                 tr.isComplete = true;

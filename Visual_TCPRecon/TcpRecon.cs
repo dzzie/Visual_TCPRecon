@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Visual_TCPRecon;
+using PacketDotNet;
+using SharpPcap;
 
 //author  : Saar Yahalom, 21 Sep 2007 
 //original: http://www.codeproject.com/Articles/20501/TCP-Session-Reconstruction-Tool
@@ -120,17 +122,19 @@ public class TcpRecon
       
     }
 
-    public void ReassemblePacket(Tamir.IPLib.Packets.TCPPacket tcpPacket)
+    public void ReassemblePacket(TcpPacket tcpPacket)
     {
 
         PacketWritten = false;
-        ulong length = (ulong)(tcpPacket.TCPPacketByteLength - tcpPacket.TCPHeaderLength);
+        ulong length = (ulong)(tcpPacket.Bytes.Length - tcpPacket.Header.Length ); //todo check me
 
         if (length == 0) return;
 
+        IpPacket ipPacket = (IpPacket)tcpPacket.ParentPacket;
+
         reassemble_tcp((ulong)tcpPacket.SequenceNumber, length,
-                       tcpPacket.TCPData, (ulong)tcpPacket.TCPData.Length, tcpPacket.Syn,
-                       tcpPacket.SourceAddressAsLong,tcpPacket.DestinationAddressAsLong,
+                       tcpPacket.PayloadData, (ulong)tcpPacket.PayloadData.Length, tcpPacket.Syn,
+                       ipPacket.SourceAddress.Address,ipPacket.DestinationAddress.Address ,
                        (uint)tcpPacket.SourcePort, (uint)tcpPacket.DestinationPort);
     }
 

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PacketDotNet;
+using SharpPcap;
 
 namespace Visual_TCPRecon
 {
@@ -46,10 +48,11 @@ namespace Visual_TCPRecon
             m_dstPort = destinationPort;
         }
 
-        public Connection(Tamir.IPLib.Packets.TCPPacket packet)
+        public Connection(TcpPacket packet)
         {
-            m_srcIp = packet.SourceAddress;
-            m_dstIp = packet.DestinationAddress;
+            IpPacket ipPacket = (IpPacket)packet.ParentPacket;
+            m_srcIp = ipPacket.SourceAddress.ToString();
+            m_dstIp = ipPacket.DestinationAddress.ToString();
             m_srcPort = (ushort)packet.SourcePort;
             m_dstPort = (ushort)packet.DestinationPort;
         }

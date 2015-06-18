@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Tamir.IPLib.Packets;
-using Tamir.IPLib;
+//using Tamir.IPLib.Packets;
+//using Tamir.IPLib;
+using SharpPcap.WinPcap;
+using SharpPcap.LibPcap;
+using PacketDotNet.Tcp;
 using System.Net;
 
 namespace Visual_TCPRecon
