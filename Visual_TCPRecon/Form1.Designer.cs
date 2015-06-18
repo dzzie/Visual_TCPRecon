@@ -98,6 +98,7 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.lv = new System.Windows.Forms.ListView();
             this.WebRequests = new System.Windows.Forms.ColumnHeader();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -160,6 +161,7 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveAsToolStripMenuItem,
             this.extractStreamsToolStripMenuItem,
             this.removeStreamToolStripMenuItem,
             this.removeUncheckedStreamsToolStripMenuItem,
@@ -175,7 +177,7 @@
             this.renameIPToolStripMenuItem,
             this.resetColorsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 280);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 324);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -681,6 +683,13 @@
             this.WebRequests.Text = "Web Requests";
             this.WebRequests.Width = 800;
             // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -797,6 +806,7 @@
         private System.Windows.Forms.ToolStripMenuItem unchunkExportedBlockToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchContentBodyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetColorsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
     }
 }
 

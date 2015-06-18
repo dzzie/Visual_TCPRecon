@@ -31,6 +31,7 @@ namespace Visual_TCPRecon
         public TcpRecon recon;
         public string EpochTimeStamp;  //For the last packet added to reassembled data block
         public string relativeTimeStamp;
+        public List<string> el = new List<string>();
 
         public enum DataTypes { dtBinary=0, dtHttpReq, dtHttpResp };
         public DataTypes DataType = DataTypes.dtBinary;
@@ -49,7 +50,8 @@ namespace Visual_TCPRecon
             t += "\r\nendOffset: " + endOffset.ToString("X");
             t += "\r\nlength: " + length.ToString();
             t += "\r\nlast packet EpochTimeStamp: " + EpochTimeStamp;
-            //t += "\r\nlast packet relativeTimeStamp: " + relativeTimeStamp;
+            t += "\r\nlast packet relativeTimeStamp: " + relativeTimeStamp;
+            t += "\r\n\r\nDebug Log:\r\n----------------------------------\r\n" + string.Join("\r\n", el.ToArray()); ;
             return t;
         }
 
@@ -81,6 +83,8 @@ namespace Visual_TCPRecon
             bool iLoaded = false;
             byte[] ret = null;
 
+            el.Clear();
+
             if (!dataLoaded)
             {
                 if (!LoadData()) return ret;
@@ -91,21 +95,32 @@ namespace Visual_TCPRecon
             byte[] input = new byte[sz];
             Buffer.BlockCopy(data, HttpHeader.Length, input, 0, sz);
 
-            string tmp = "";
             if (isChunked)
             {
-                if(Unchunk(input, ref tmp)){
-                    input = File.ReadAllBytes(tmp);
+                el.Add("Trying to unchunk");
+                MemoryStream unchunked = new MemoryStream();
+                if (Unchunk(input, ref unchunked))
+                {
+                    el.Add("Success! " + unchunked.Length.ToString("X") + " bytes");
+                    input = unchunked.GetBuffer();
+                }
+                else
+                {
+                    el.Add("Unchunk failed!");
                 }
             }
 
             if(isGZip)
             {
+                el.Add("Trying to ungzip");
                 try
                 {
-                    ret = Decompress(input);                   
+                    ret = Decompress(input);
+                    el.Add("Success!");
                 }
-                catch (Exception ex) {}
+                catch (Exception ex) {
+                    el.Add("ungzip failed: " + ex.Message);
+                }
             }
             else
             {
@@ -122,6 +137,8 @@ namespace Visual_TCPRecon
             bool iLoaded = false;
             string ret = "";
 
+            el.Clear();
+
             if (!dataLoaded)
             {
                 if (!LoadData()) return "";
@@ -130,28 +147,45 @@ namespace Visual_TCPRecon
 
             if(isChunked || isGZip)
             {
-                try
-                {
+                
                     int sz = data.Length - HttpHeader.Length;
                     byte[] input = new byte[sz];
                     Buffer.BlockCopy(data, HttpHeader.Length, input, 0, sz);
-                    byte[] b2 = new byte[0];
+                    //byte[] b2 = new byte[0];
 
-                    string tmp = "";
                     if (isChunked)
                     {
-                        if (Unchunk(input, ref tmp)) b2 = File.ReadAllBytes(tmp);
+                        el.Add("Trying to unchunk");
+                        MemoryStream unchunked = new MemoryStream();
+                        if (Unchunk(input, ref unchunked))
+                        {
+                            el.Add("Success! " + unchunked.Length.ToString() + " bytes");
+                            input = unchunked.GetBuffer();
+                        }
+                        else
+                        {
+                            el.Add("Unchunk failed!");
+                        }
                     }
 
-                    if (isGZip) b2 = Decompress(input);
-
-                    byte[] buf = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, b2, 0, b2.Length);
+                    if (isGZip)
+                    {
+                        el.Add("Trying to ungzip");
+                        try
+                        {
+                            input = Decompress(input);
+                            el.Add("Success!");
+                        }
+                        catch (Exception ex)
+                        {
+                            el.Add("ungzip failed: " + ex.Message);
+                            ret = AsString();
+                        }
+                    }
+            
+                    byte[] buf = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, input, 0, input.Length);
                     ret = HttpHeader + Encoding.UTF8.GetString(buf, 0, buf.Length);
-                }
-                catch (Exception ex) {
-                    string tmp = ex.Message;
-                    ret = AsString();
-                }
+
             }
             else
             {
@@ -248,6 +282,7 @@ namespace Visual_TCPRecon
                 }
             }
 
+            //byte[] bb = GetBinaryBody(); //handles ungzip and unchunk..
             if(start + len > this.length) len = this.length - start;
 
             byte[] buf = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, data, start, len);
@@ -303,7 +338,7 @@ namespace Visual_TCPRecon
         {
 
             if (dataLoaded) return true;
-            if (!File.Exists(parentFile)) return false ;
+            if (!File.Exists(parentFile)){el.Add("Parent file not found"); return false ;}
 
             using (BinaryReader br = new BinaryReader(File.Open(parentFile, FileMode.Open)))
             {
@@ -352,83 +387,76 @@ namespace Visual_TCPRecon
         }
 
         //mod from mark woan httpkit
-        public bool Unchunk(byte[] buf, ref string outFile)
+        public bool Unchunk(byte[] buf, ref MemoryStream writeStream )
         {
 
-            string inputFile = Path.GetTempFileName();
-            File.WriteAllBytes(inputFile, buf);
+            MemoryStream inFile = new MemoryStream(buf);
 
-            outFile = Path.GetTempFileName();
-
-            using (Stream inFile = System.IO.File.OpenRead(inputFile))
+            long bytesWritten = 0;
+            try
             {
-                using (FileStream writeStream = System.IO.File.OpenWrite(outFile))
+                do
                 {
-                    long bytesWritten = 0;
-                    try
+                    string temp = this.ReadLine(inFile);
+                    if (temp == null) return true;
+
+                    if (temp.Length == 0)
                     {
-                        do
-                        {
-                            string temp = this.ReadLine(inFile);
-                            if (temp == null) return true;
-
-                            if (temp.Length == 0)
-                            {
-                                temp = this.ReadLine(inFile);
-                                if (temp == null) return true;
-                                if (temp.Length == 0) return true;
-                            }
-
-                            // Some chunked encoding has a semi-colon after
-                            // the size of the chunk, so lets just remove it
-                            temp = temp.Replace(";", string.Empty);
-
-                            // Now try to parse out an INT from the string representation of a hex number
-                            int chunkSize = 0;
-                            if (int.TryParse(temp, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out chunkSize) == false)
-                            {
-                                // TODO raise error?
-                                return true;
-                            }
-
-                            if (chunkSize == 0)
-                            {
-                                // A zero signifies that we have reached the end of the chunked sections so lets exit
-                                return true;
-                            }
-
-                            //if (stream.Position + chunkSize > stream.Length)
-                            //{
-                            //    // TODO raise error? Invalid chunk data e.g. is greater length than rest of stream
-                            //    return false;
-                            //}
-
-                            byte[] chunk = new byte[chunkSize];
-                            int ret = inFile.Read(chunk, 0, chunkSize);
-                            bytesWritten += ret;
-                            if (ret != chunkSize)
-                            {
-                                // TODO raise error? e.g. the amount of data read should be equal to the amount in the chunk size?
-                                //OutputDebug("GZIP", inputfile, string.Empty);
-                                return false;
-                            }
-
-                            writeStream.Write(chunk, 0, ret);
-                        }
-                        while (inFile.Position < inFile.Length);
+                        temp = this.ReadLine(inFile);
+                        if (temp == null) return true;
+                        if (temp.Length == 0) return true;
                     }
-                    catch (Exception ex)
+
+                    // Some chunked encoding has a semi-colon after
+                    // the size of the chunk, so lets just remove it
+                    temp = temp.Replace(";", string.Empty);
+
+                    // Now try to parse out an INT from the string representation of a hex number
+                    int chunkSize = 0;
+                    if (int.TryParse(temp, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out chunkSize) == false)
                     {
+                        // TODO raise error?
+                        return true;
+                    }
+
+                    if (chunkSize == 0)
+                    {
+                        // A zero signifies that we have reached the end of the chunked sections so lets exit
+                        return true;
+                    }
+
+                    //if (stream.Position + chunkSize > stream.Length)
+                    //{
+                    //    // TODO raise error? Invalid chunk data e.g. is greater length than rest of stream
+                    //    return false;
+                    //}
+
+                    byte[] chunk = new byte[chunkSize];
+                    int ret = inFile.Read(chunk, 0, chunkSize);
+                    bytesWritten += ret;
+                    if (ret != chunkSize)
+                    {
+                        // TODO raise error? e.g. the amount of data read should be equal to the amount in the chunk size?
+                        //OutputDebug("GZIP", inputfile, string.Empty);
                         return false;
                     }
-                    finally
-                    {
-                        //this.TempFileSize = bytesWritten;
-                    }
+
+                    writeStream.Write(chunk, 0, ret);
                 }
+                while (inFile.Position < inFile.Length);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            finally
+            {
+                //this.TempFileSize = bytesWritten;
+            }
+        
 
                 return true;
-            }
+            
         }
 
         //mark woan httpkit

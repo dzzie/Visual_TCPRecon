@@ -1155,6 +1155,27 @@ namespace Visual_TCPRecon
             }
         }
 
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (curNode == null) return;
+            if (saveDlg.ShowDialog() != DialogResult.OK) return;
+
+            try{
+                DataBlock db = (DataBlock)curNode.Tag;
+                if (db.LoadData())
+                {
+                    byte[] body = db.GetBinaryBody();
+                    File.WriteAllBytes(saveDlg.FileName,body);
+                    db.FreeData();
+                }
+                MessageBox.Show("Saved!");
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Failed: " + ex.Message);
+            }
+
+        }
+
 
 
     }
