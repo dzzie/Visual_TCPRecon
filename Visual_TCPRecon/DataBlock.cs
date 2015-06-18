@@ -6,6 +6,7 @@ using System.IO;
 using VTcpRecon;
 using System.Text.RegularExpressions;
 using System.IO.Compression;
+using System.Globalization;
 
 //this class stores the details on where the data is located in the parent stream file (of many data blocks)
 //and can extract it on demand. it also has a basic http header parser, and gzip decompressor which could be
@@ -90,6 +91,14 @@ namespace Visual_TCPRecon
             byte[] input = new byte[sz];
             Buffer.BlockCopy(data, HttpHeader.Length, input, 0, sz);
 
+            string tmp = "";
+            if (isChunked)
+            {
+                if(Unchunk(input, ref tmp)){
+                    input = File.ReadAllBytes(tmp);
+                }
+            }
+
             if(isGZip)
             {
                 try
@@ -119,18 +128,28 @@ namespace Visual_TCPRecon
                 iLoaded = true;
             }
 
-            if(isGZip)
+            if(isChunked || isGZip)
             {
                 try
                 {
                     int sz = data.Length - HttpHeader.Length;
                     byte[] input = new byte[sz];
                     Buffer.BlockCopy(data, HttpHeader.Length, input, 0, sz);
-                    byte[] b2 = Decompress(input);
+                    byte[] b2 = new byte[0];
+
+                    string tmp = "";
+                    if (isChunked)
+                    {
+                        if (Unchunk(input, ref tmp)) b2 = File.ReadAllBytes(tmp);
+                    }
+
+                    if (isGZip) b2 = Decompress(input);
+
                     byte[] buf = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, b2, 0, b2.Length);
                     ret = HttpHeader + Encoding.UTF8.GetString(buf, 0, buf.Length);
                 }
                 catch (Exception ex) {
+                    string tmp = ex.Message;
                     ret = AsString();
                 }
             }
@@ -332,6 +351,124 @@ namespace Visual_TCPRecon
             }
         }
 
+        //mod from mark woan httpkit
+        public bool Unchunk(byte[] buf, ref string outFile)
+        {
+
+            string inputFile = Path.GetTempFileName();
+            File.WriteAllBytes(inputFile, buf);
+
+            outFile = Path.GetTempFileName();
+
+            using (Stream inFile = System.IO.File.OpenRead(inputFile))
+            {
+                using (FileStream writeStream = System.IO.File.OpenWrite(outFile))
+                {
+                    long bytesWritten = 0;
+                    try
+                    {
+                        do
+                        {
+                            string temp = this.ReadLine(inFile);
+                            if (temp == null) return true;
+
+                            if (temp.Length == 0)
+                            {
+                                temp = this.ReadLine(inFile);
+                                if (temp == null) return true;
+                                if (temp.Length == 0) return true;
+                            }
+
+                            // Some chunked encoding has a semi-colon after
+                            // the size of the chunk, so lets just remove it
+                            temp = temp.Replace(";", string.Empty);
+
+                            // Now try to parse out an INT from the string representation of a hex number
+                            int chunkSize = 0;
+                            if (int.TryParse(temp, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out chunkSize) == false)
+                            {
+                                // TODO raise error?
+                                return true;
+                            }
+
+                            if (chunkSize == 0)
+                            {
+                                // A zero signifies that we have reached the end of the chunked sections so lets exit
+                                return true;
+                            }
+
+                            //if (stream.Position + chunkSize > stream.Length)
+                            //{
+                            //    // TODO raise error? Invalid chunk data e.g. is greater length than rest of stream
+                            //    return false;
+                            //}
+
+                            byte[] chunk = new byte[chunkSize];
+                            int ret = inFile.Read(chunk, 0, chunkSize);
+                            bytesWritten += ret;
+                            if (ret != chunkSize)
+                            {
+                                // TODO raise error? e.g. the amount of data read should be equal to the amount in the chunk size?
+                                //OutputDebug("GZIP", inputfile, string.Empty);
+                                return false;
+                            }
+
+                            writeStream.Write(chunk, 0, ret);
+                        }
+                        while (inFile.Position < inFile.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                    finally
+                    {
+                        //this.TempFileSize = bytesWritten;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        //mark woan httpkit
+        private string ReadLine(Stream stream)
+        {
+            //int maxStringLength = 16384;
+            //  \r = 0x0d = carriage return
+            //  \n = 0x0a = line feed
+            StringBuilder line = new StringBuilder();
+            bool carrigeReturnReceived = false;
+            bool lineFeedReceived = false;
+            //int indexOffset = 0;
+            while (!carrigeReturnReceived || !lineFeedReceived)
+            {
+                //if (dataIndex + indexOffset >= data.Length || indexOffset >= maxStringLength)
+                //    return null;
+                //else
+                {
+                    byte b = (byte)stream.ReadByte();
+                    if (b == 0x0d)
+                        carrigeReturnReceived = true;
+                    else if (carrigeReturnReceived && b == 0x0a)
+                        lineFeedReceived = true;
+                    else
+                    {
+                        line.Append((char)b);
+                        carrigeReturnReceived = false;
+                        lineFeedReceived = false;
+                    }
+                    //indexOffset++;
+                }
+            }
+            //dataIndex += indexOffset;
+            return line.ToString();
+        }
+
+        private string GetTempFile()
+        {
+            return Path.Combine(Path.GetTempPath(), System.Guid.NewGuid().ToString() + ".tmp");
+        }
 
     }
 }
