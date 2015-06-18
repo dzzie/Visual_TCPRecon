@@ -165,8 +165,8 @@ namespace Visual_TCPRecon
             }else{
                 recon = sharpPcapDict[c];
             }
-            
-            recon.ReassemblePacket(tcpPacket);  //can contain fragments and out of order packets 
+
+            recon.ReassemblePacket(ipPacket, tcpPacket, e.Packet.Timeval);  //can contain fragments and out of order packets 
 
             if (recon.PacketWritten) //reassembly/reordering complete data was saved this time..
             {

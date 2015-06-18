@@ -53,12 +53,13 @@ Base project:
  dependancies: (included) make sure to run the cmd "regsvr hexed.ocx" 
  (also installed with pdfstreamdumper/sysanalyzer)
 
- Tamir.IPLib.SharpPcap.dll which contains:
   PacketDotNet http://sourceforge.net/apps/mediawiki/packetnet/index.php?title=Main_Page
   SharpPcap    http://sourceforge.net/apps/mediawiki/sharppcap/index.php?title=Main_Page
 
- hexed.ocx -         https://github.com/dzzie/hexed
- winpcap             http://www.winpcap.org/
- 
+  hexed.ocx -         https://github.com/dzzie/hexed
+  winpcap             http://www.winpcap.org/
+
+  ReassemblePacket was updated 6.17.2015 with code from Mark Woan's SessionViewer
+  https://github.com/woanware/SessionViewer  
 
 
