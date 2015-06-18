@@ -124,16 +124,14 @@ public class TcpRecon
         Close();
     }
 
-    public void ReassemblePacket(IpPacket ipPacket, TcpPacket tcpPacket, PosixTimeval timeVal)
+    public void ReassemblePacket(long srcIP, long dstIP, TcpPacket tcpPacket, PosixTimeval timeVal)
     {
         try
         {
-
             ushort sourcePort = 0;
             ushort destinationPort = 0;
 
-            if (ipPacket.Protocol == IPProtocolType.TCP)
-            {
+            //if (proto == IPProtocolType.TCP) {
                 PacketWritten = false; 
                 sourcePort = tcpPacket.SourcePort;
                 destinationPort = tcpPacket.DestinationPort;
@@ -151,19 +149,18 @@ public class TcpRecon
                     this.HasFin = true;
                 }
 
-                //uint acknowledged = Convert.ToUInt32(tcpPacket.AcknowledgmentNumber);
                 ReassembleTcp((ulong)tcpPacket.SequenceNumber,
                               tcpPacket.AcknowledgmentNumber,
                               length,
                               tcpPacket.PayloadData,
                               (ulong)tcpPacket.PayloadData.Length,
                               tcpPacket.Syn,
-                              ipPacket.SourceAddress.Address,
-                              ipPacket.DestinationAddress.Address,
+                              srcIP,
+                              dstIP,
                               (uint)tcpPacket.SourcePort,
                               (uint)tcpPacket.DestinationPort,
                               timeVal);
-            }
+            //}
            
 
             if (TimestampFirstPacket == null)

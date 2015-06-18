@@ -119,11 +119,8 @@ namespace Visual_TCPRecon
         // The callback function for the SharpPcap library
         private void device_PcapOnPacketArrival(object sender, CaptureEventArgs e)
         {
-
+            
             var packet = PacketDotNet.Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
-            var eth = ((PacketDotNet.EthernetPacket)packet);
-            var ip = PacketDotNet.IpPacket.GetEncapsulated(packet);
-            var tcp = PacketDotNet.TcpPacket.GetEncapsulated(packet);
 
             if (firstTimeStamp == 0)
             {
@@ -131,9 +128,10 @@ namespace Visual_TCPRecon
             }
 
             totalPackets++;
-            if (packet is UdpPacket)
+            UdpPacket udpPacket = (UdpPacket)packet.Extract(typeof(UdpPacket));
+            if (udpPacket != null)
             {
-                HandleDNS(packet);
+                HandleDNS(udpPacket);
                 return;
             }
             
@@ -165,8 +163,11 @@ namespace Visual_TCPRecon
             }else{
                 recon = sharpPcapDict[c];
             }
-
-            recon.ReassemblePacket(ipPacket, tcpPacket, e.Packet.Timeval);  //can contain fragments and out of order packets 
+            
+            //can contain fragments and out of order packets 
+            recon.ReassemblePacket(ipPacket.SourceAddress.Address, 
+                                   ipPacket.DestinationAddress.Address, 
+                                   tcpPacket, e.Packet.Timeval);  
 
             if (recon.PacketWritten) //reassembly/reordering complete data was saved this time..
             {

@@ -470,7 +470,13 @@ namespace Visual_TCPRecon
             wb.Navigate2(ref blankUrl);
             string tmp = "";
 
-            if (tabs.SelectedTab.Text == "TextView") rtf.Text = curdb.GetBody();
+            if (tabs.SelectedTab.Text == "TextView")
+            {
+                rtf.Text = ""; 
+                rtf.SelectionStart = 0;
+                rtf.Text = curdb.GetBody().Replace('\0',' ');
+            }
+
             if (tabs.SelectedTab.Text == "Details") txtDetails.Text = curdb.GetDetails();
 
             if (tabs.SelectedTab.Text == "ImageView")
