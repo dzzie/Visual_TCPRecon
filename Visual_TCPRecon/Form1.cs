@@ -16,6 +16,7 @@ using Microsoft.VisualBasic;
 using Visual_TCPRecon.Interfaces;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 
 /*
  *  This code was modified by dzzie@yahoo.com from the base at:
@@ -42,6 +43,9 @@ namespace Visual_TCPRecon
 
     public partial class Form1 : Form
     {
+        [DllImport("user32.dll")]
+        static extern bool LockWindowUpdate(IntPtr hWndLock);
+
         static string outDir = "";
         DateTime startTime;
         public DataBlock curdb = null;
@@ -58,6 +62,7 @@ namespace Visual_TCPRecon
             lvFiltered.ContextMenuStrip = mnuLvPopup;
             lvDNS.ContextMenuStrip = mnuLvPopup;
             lvIPs.ContextMenuStrip = mnuLvPopup;
+            lblFind.Text = "";
 
             string[] args = Environment.GetCommandLineArgs();
             foreach (string a in args)
@@ -502,7 +507,6 @@ namespace Visual_TCPRecon
                 //lvDNS.Left = this.Width - lvDNS.Width - 20;
                 lv.Width = this.Width - lv.Left - 20; // -lvDNS.Width;
 
-
                 lvDNS.Height = this.Height - lv.Top - 40;
                 lvIPs.Height = this.Height - lv.Top - 40;
                 lv.Height = this.Height - lv.Top - 40 - txtFilter.Height;
@@ -516,7 +520,7 @@ namespace Visual_TCPRecon
 
                 tabs.Height = tv.Height;
                 he.Height = tabs.Height - 40;
-                rtf.Height = he.Height;
+                rtf.Height = he.Height - txtFind.Height - 10;
                 txtDetails.Height = he.Height;
 
                 lv.Columns[0].Width = lv.Width - 10;
@@ -1182,7 +1186,49 @@ namespace Visual_TCPRecon
 
         }
 
+        private void btnFind_Click(object sender, EventArgs e)
+        {
+            int count = 0;
+            string keyword = txtFind.Text.Trim(); 
+            int pos = 0;
 
+            LockWindowUpdate(rtf.Handle);
+
+            rtf.SelectAll();
+            //rtf.SelectionColor = Color.Black;
+            rtf.SelectionBackColor = Color.White;
+            rtf.Select(0, 0);
+
+            do
+            {
+                pos = rtf.Find(keyword, pos, rtf.Text.Length, (chkWholeWord.Checked ? RichTextBoxFinds.WholeWord : RichTextBoxFinds.None) );
+                if (pos >= 0)                                                           
+                {
+                    count++; 
+                    //rtf.SelectionColor = Color.Blue;
+                    rtf.SelectionBackColor = Color.Yellow;
+                    pos += keyword.Length; 
+                }
+                if (pos == rtf.Text.Length) pos = -1;
+            } while (pos > 0);
+
+            LockWindowUpdate(IntPtr.Zero);
+
+            if (count == 0)
+            {
+                lblFind.Text = "No Matches Found";
+            }
+            else
+            {
+                lblFind.Text = count.ToString() + " matches found.";
+            }
+
+        }
+
+        private void txtFind_TextChanged(object sender, EventArgs e)
+        {
+            lblFind.Text = "";
+        }
 
     }
 

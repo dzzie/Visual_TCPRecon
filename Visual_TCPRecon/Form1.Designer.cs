@@ -36,6 +36,7 @@
             this.btnBrowsePcap = new System.Windows.Forms.Button();
             this.tv = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeUncheckedStreamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +73,10 @@
             this.tHexView = new System.Windows.Forms.TabPage();
             this.he = new Axrhexed.AxHexEd();
             this.tTextView = new System.Windows.Forms.TabPage();
+            this.chkWholeWord = new System.Windows.Forms.CheckBox();
+            this.lblFind = new System.Windows.Forms.Label();
+            this.btnFind = new System.Windows.Forms.Button();
+            this.txtFind = new System.Windows.Forms.TextBox();
             this.rtf = new System.Windows.Forms.RichTextBox();
             this.tWebView = new System.Windows.Forms.TabPage();
             this.wb = new AxSHDocVw.AxWebBrowser();
@@ -98,7 +103,6 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.lv = new System.Windows.Forms.ListView();
             this.WebRequests = new System.Windows.Forms.ColumnHeader();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabs.SuspendLayout();
@@ -177,7 +181,14 @@
             this.renameIPToolStripMenuItem,
             this.resetColorsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 324);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 302);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // extractStreamsToolStripMenuItem
             // 
@@ -449,6 +460,10 @@
             // 
             // tTextView
             // 
+            this.tTextView.Controls.Add(this.chkWholeWord);
+            this.tTextView.Controls.Add(this.lblFind);
+            this.tTextView.Controls.Add(this.btnFind);
+            this.tTextView.Controls.Add(this.txtFind);
             this.tTextView.Controls.Add(this.rtf);
             this.tTextView.Location = new System.Drawing.Point(4, 4);
             this.tTextView.Name = "tTextView";
@@ -458,13 +473,50 @@
             this.tTextView.Text = "TextView";
             this.tTextView.UseVisualStyleBackColor = true;
             // 
+            // chkWholeWord
+            // 
+            this.chkWholeWord.AutoSize = true;
+            this.chkWholeWord.Location = new System.Drawing.Point(208, 10);
+            this.chkWholeWord.Name = "chkWholeWord";
+            this.chkWholeWord.Size = new System.Drawing.Size(80, 17);
+            this.chkWholeWord.TabIndex = 5;
+            this.chkWholeWord.Text = "Wholeword";
+            this.chkWholeWord.UseVisualStyleBackColor = true;
+            // 
+            // lblFind
+            // 
+            this.lblFind.AutoSize = true;
+            this.lblFind.Location = new System.Drawing.Point(423, 9);
+            this.lblFind.Name = "lblFind";
+            this.lblFind.Size = new System.Drawing.Size(37, 13);
+            this.lblFind.TabIndex = 4;
+            this.lblFind.Text = "lblFind";
+            // 
+            // btnFind
+            // 
+            this.btnFind.Location = new System.Drawing.Point(305, 3);
+            this.btnFind.Name = "btnFind";
+            this.btnFind.Size = new System.Drawing.Size(84, 24);
+            this.btnFind.TabIndex = 3;
+            this.btnFind.Text = "Find";
+            this.btnFind.UseVisualStyleBackColor = true;
+            this.btnFind.Click += new System.EventHandler(this.btnFind_Click);
+            // 
+            // txtFind
+            // 
+            this.txtFind.Location = new System.Drawing.Point(6, 8);
+            this.txtFind.Name = "txtFind";
+            this.txtFind.Size = new System.Drawing.Size(190, 20);
+            this.txtFind.TabIndex = 2;
+            this.txtFind.TextChanged += new System.EventHandler(this.txtFind_TextChanged);
+            // 
             // rtf
             // 
             this.rtf.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtf.Location = new System.Drawing.Point(3, 6);
+            this.rtf.Location = new System.Drawing.Point(3, 32);
             this.rtf.Name = "rtf";
             this.rtf.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.rtf.Size = new System.Drawing.Size(766, 474);
+            this.rtf.Size = new System.Drawing.Size(766, 448);
             this.rtf.TabIndex = 0;
             this.rtf.Text = "";
             // 
@@ -683,13 +735,6 @@
             this.WebRequests.Text = "Web Requests";
             this.WebRequests.Width = 800;
             // 
-            // saveAsToolStripMenuItem
-            // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -724,6 +769,7 @@
             this.tHexView.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.he)).EndInit();
             this.tTextView.ResumeLayout(false);
+            this.tTextView.PerformLayout();
             this.tWebView.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.wb)).EndInit();
             this.tImageView.ResumeLayout(false);
@@ -807,6 +853,10 @@
         private System.Windows.Forms.ToolStripMenuItem searchContentBodyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetColorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.Button btnFind;
+        private System.Windows.Forms.TextBox txtFind;
+        private System.Windows.Forms.Label lblFind;
+        private System.Windows.Forms.CheckBox chkWholeWord;
     }
 }
 

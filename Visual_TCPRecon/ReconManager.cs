@@ -119,8 +119,17 @@ namespace Visual_TCPRecon
         // The callback function for the SharpPcap library
         private void device_PcapOnPacketArrival(object sender, CaptureEventArgs e)
         {
-            
-            var packet = PacketDotNet.Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
+            Packet packet;
+
+            try
+            {
+                packet = PacketDotNet.Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
+            }
+            catch (Exception ex)
+            {
+                //System.Console.Write(ex.Message); //todo: sometimes get error raw packet not implemented?
+                return;
+            }
 
             if (firstTimeStamp == 0)
             {
