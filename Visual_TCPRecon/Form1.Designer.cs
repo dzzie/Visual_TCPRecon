@@ -519,6 +519,8 @@
             this.rtf.Size = new System.Drawing.Size(766, 448);
             this.rtf.TabIndex = 0;
             this.rtf.Text = "";
+            this.rtf.MouseUp += new System.Windows.Forms.MouseEventHandler(this.rtf_MouseUp);
+            this.rtf.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.rtf_MouseDoubleClick);
             // 
             // tWebView
             // 

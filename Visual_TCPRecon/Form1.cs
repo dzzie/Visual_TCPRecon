@@ -1192,12 +1192,8 @@ namespace Visual_TCPRecon
             string keyword = txtFind.Text.Trim(); 
             int pos = 0;
 
+            clearSelection();
             LockWindowUpdate(rtf.Handle);
-
-            rtf.SelectAll();
-            //rtf.SelectionColor = Color.Black;
-            rtf.SelectionBackColor = Color.White;
-            rtf.Select(0, 0);
 
             do
             {
@@ -1228,6 +1224,33 @@ namespace Visual_TCPRecon
         private void txtFind_TextChanged(object sender, EventArgs e)
         {
             lblFind.Text = "";
+        }
+
+        private void clearSelection()
+        {
+            LockWindowUpdate(rtf.Handle);
+            rtf.SelectAll();
+            //rtf.SelectionColor = Color.Black;
+            rtf.SelectionBackColor = Color.White;
+            rtf.Select(0, 0);
+            LockWindowUpdate(IntPtr.Zero);
+        }
+
+        private void rtf_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (rtf.SelectedText.Length > 0 && rtf.SelectedText.Length < 300)
+            {
+                int startPos = rtf.SelectionStart;
+                txtFind.Text = rtf.SelectedText;
+                btnFind_Click(null, null);
+                rtf.SelectionStart = startPos;
+            } 
+        }
+
+        private void rtf_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            rtf.SelectionLength = 0;
+            clearSelection();
         }
 
     }
