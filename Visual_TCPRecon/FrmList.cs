@@ -42,5 +42,10 @@ namespace Visual_TCPRecon
             }
             catch (Exception ex) { ;}
         }
+
+        private void FrmList_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

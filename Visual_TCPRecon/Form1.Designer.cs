@@ -89,6 +89,7 @@
             this.copyAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.whoisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lvDNS = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.lvIPs = new System.Windows.Forms.ListView();
@@ -586,9 +587,10 @@
             this.copySelectedToolStripMenuItem,
             this.copyAllToolStripMenuItem,
             this.selectAllToolStripMenuItem,
-            this.searchToolStripMenuItem});
+            this.searchToolStripMenuItem,
+            this.whoisToolStripMenuItem});
             this.mnuLvPopup.Name = "mnuLvPopup";
-            this.mnuLvPopup.Size = new System.Drawing.Size(155, 92);
+            this.mnuLvPopup.Size = new System.Drawing.Size(155, 114);
             // 
             // copySelectedToolStripMenuItem
             // 
@@ -617,6 +619,13 @@
             this.searchToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
+            // 
+            // whoisToolStripMenuItem
+            // 
+            this.whoisToolStripMenuItem.Name = "whoisToolStripMenuItem";
+            this.whoisToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.whoisToolStripMenuItem.Text = "Whois";
+            this.whoisToolStripMenuItem.Click += new System.EventHandler(this.whoisToolStripMenuItem_Click);
             // 
             // lvDNS
             // 
@@ -859,6 +868,7 @@
         private System.Windows.Forms.TextBox txtFind;
         private System.Windows.Forms.Label lblFind;
         private System.Windows.Forms.CheckBox chkWholeWord;
+        private System.Windows.Forms.ToolStripMenuItem whoisToolStripMenuItem;
     }
 }
 

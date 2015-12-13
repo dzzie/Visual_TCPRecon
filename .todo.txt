@@ -1,3 +1,4 @@
+
 relate dns name to ip
 better way to search tree than check/remove..filter like requests
 

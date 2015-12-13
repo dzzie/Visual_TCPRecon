@@ -546,6 +546,7 @@ namespace Visual_TCPRecon
         private void lv_SelectedIndexChanged(object sender, EventArgs e)
         {
             selLV = lv;
+            whoisToolStripMenuItem.Visible = false; 
             try
             {
                 ListViewItem li = lv.SelectedItems[0];
@@ -613,11 +614,13 @@ namespace Visual_TCPRecon
         private void lvDNS_SelectedIndexChanged(object sender, EventArgs e)
         {
             selLV = lvDNS;
+            whoisToolStripMenuItem.Visible = true; 
         }
 
         private void lvIPs_SelectedIndexChanged(object sender, EventArgs e)
         {
             selLV = lvIPs;
+            whoisToolStripMenuItem.Visible = true; 
         }
 
         private void selectLikeToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -965,6 +968,7 @@ namespace Visual_TCPRecon
         private void lvFiltered_SelectedIndexChanged(object sender, EventArgs e)
         {
             selLV = lvFiltered;
+            whoisToolStripMenuItem.Visible = false; 
             try
             {
                 ListViewItem li = lvFiltered.SelectedItems[0];
@@ -1251,6 +1255,63 @@ namespace Visual_TCPRecon
         {
             rtf.SelectionLength = 0;
             clearSelection();
+        }
+
+        private string WhoisLookup(string ip)
+        {
+            string whois = Application.StartupPath;
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (!File.Exists(whois + "\\whois.exe")) whois = Path.GetDirectoryName(whois);
+            }
+
+            if (!File.Exists(whois + "\\whois.exe"))
+            {
+                MessageBox.Show("Could not locate whois in: " + whois);
+                return "";
+            }
+
+            whois += "\\whois.exe";
+
+            if (ip.Substring(0, 4) == "tcp:" || ip.Substring(0, 4) == "udp:")
+            {
+                ip = ip.Substring(5).Trim();
+            }
+
+            return GetCommandOutput(whois, ip);
+        }
+
+        private string GetCommandOutput(string exe, string args)
+        {
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = exe;
+            p.StartInfo.Arguments = args;
+            p.StartInfo.CreateNoWindow = true;
+
+            p.Start();
+            
+            string output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+
+            return output;
+        }
+
+        private void whoisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selLV == null) return;
+            try
+            {
+                ListViewItem li = selLV.SelectedItems[0];
+                if (li.Text.Length == 0) return;
+                string ret = WhoisLookup(li.Text);
+                frmDump d = new frmDump();
+                d.LoadData("Whois results for: " + li.Text + "\r\n\r\n" + ret);
+            }
+            catch (Exception ex) { }
         }
 
     }

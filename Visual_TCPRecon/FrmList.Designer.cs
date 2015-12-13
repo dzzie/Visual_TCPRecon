@@ -62,6 +62,7 @@
             this.Name = "FrmList";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Search Results";
+            this.Load += new System.EventHandler(this.FrmList_Load);
             this.Resize += new System.EventHandler(this.FrmList_Resize);
             this.ResumeLayout(false);
 
