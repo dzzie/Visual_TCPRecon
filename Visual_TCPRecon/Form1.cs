@@ -889,20 +889,9 @@ namespace Visual_TCPRecon
 
         private void splitLargePCAPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string tcpDump = Application.StartupPath;
+            string tcpDump = Program.FindExternal("tcpdump.exe");
+            if (tcpDump.Length == 0) return;
 
-            for (int i = 0; i < 5; i++)
-            {
-                if (!File.Exists(tcpDump + "\\tcpdump.exe")) tcpDump = Path.GetDirectoryName(tcpDump);
-            }
-
-            if(!File.Exists(tcpDump + "\\tcpdump.exe")){
-                MessageBox.Show("Could not locate tcpdump in: " + tcpDump);
-                return;
-            }
-
-            tcpDump += "\\tcpdump.exe";
-            
             dlg.Filter = "Pcap files (*.pcap)|*.pcap";
             dlg.FileName = txtPcap.Text;
             if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -1259,20 +1248,8 @@ namespace Visual_TCPRecon
 
         private string WhoisLookup(string ip)
         {
-            string whois = Application.StartupPath;
-
-            for (int i = 0; i < 5; i++)
-            {
-                if (!File.Exists(whois + "\\whois.exe")) whois = Path.GetDirectoryName(whois);
-            }
-
-            if (!File.Exists(whois + "\\whois.exe"))
-            {
-                MessageBox.Show("Could not locate whois in: " + whois);
-                return "";
-            }
-
-            whois += "\\whois.exe";
+            string whois = Program.FindExternal("whois.exe");
+            if (whois.Length == 0) return "";
 
             if (ip.Substring(0, 4) == "tcp:" || ip.Substring(0, 4) == "udp:")
             {
