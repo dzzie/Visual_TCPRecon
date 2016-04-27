@@ -1234,9 +1234,11 @@ namespace Visual_TCPRecon
             if (rtf.SelectedText.Length > 0 && rtf.SelectedText.Length < 300)
             {
                 int startPos = rtf.SelectionStart;
+                int selLen = rtf.SelectionLength;
                 txtFind.Text = rtf.SelectedText;
                 btnFind_Click(null, null);
                 rtf.SelectionStart = startPos;
+                rtf.SelectionLength = selLen;
             } 
         }
 
