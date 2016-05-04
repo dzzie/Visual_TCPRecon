@@ -250,6 +250,10 @@ namespace Visual_TCPRecon
 
         private void DNS(cDNS dns)
         {
+            foreach (ListViewItem item in lvDNS.Items)
+            {
+                if (item.Text == dns.dnsName) return; //todo add count field?
+            }
             lvDNS.Items.Add(dns.dnsName);
         }
 
