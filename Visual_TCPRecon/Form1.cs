@@ -259,8 +259,8 @@ namespace Visual_TCPRecon
 
         //#endregion
 
-        public static string InputBox(string msg){  return InputBox(msg, "", ""); }
-        public static string InputBox(string msg, string title, string defaultVal)
+        public string InputBox(string msg){  return InputBox(msg, "", ""); }
+        public string InputBox(string msg, string title, string defaultVal)
         {
             string tmp = Interaction.InputBox(msg, title, defaultVal, -1, -1);
             if (tmp == null) tmp = "";

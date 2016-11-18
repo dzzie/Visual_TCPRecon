@@ -102,6 +102,7 @@
     <Compile Include="FrmList.Designer.cs">
       <DependentUpon>FrmList.cs</DependentUpon>
     </Compile>
+    <Compile Include="hexDump.cs" />
     <Compile Include="Interfaces\IScript.cs" />
     <Compile Include="Interfaces\IScriptableComponent.cs" />
     <Compile Include="Program.cs" />
@@ -139,9 +140,7 @@
     </Compile>
     <Compile Include="ReconManager.cs" />
     <Compile Include="scriptHelper.cs" />
-    <Compile Include="Scripts\Exploit_Scan.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Scripts\sample_decoder.cs" />
     <Compile Include="TcpRecon.cs" />
   </ItemGroup>
   <ItemGroup>
