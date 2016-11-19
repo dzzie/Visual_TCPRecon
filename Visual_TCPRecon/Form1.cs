@@ -110,7 +110,9 @@ namespace Visual_TCPRecon
         private void NewNode(DataBlock db)
         {
             TreeNode n = null;
-            string display = string.Format("{0:x},{1:x}, srcPort:{2}", db.startOffset, db.length, db.recon.LastSourcePort);
+            string direction = "->";
+            if (db.SourceAddress != db.recon.ClientAddress) direction = "  "; //"<-";
+            string display = string.Format("{0} sz:{1,4:X}  sPort: {2,5}", direction, db.length, db.recon.LastSourcePort);
             n = tv.Nodes[db.recon.HashCode];
             TreeNode nn = n.Nodes.Add(display);
             nn.Tag = db;

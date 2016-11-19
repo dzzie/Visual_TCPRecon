@@ -63,7 +63,10 @@ namespace Scripts
                 f.setpb(i, f.tv.Nodes.Count, 1);
 
                 TcpRecon recon = (TcpRecon)n.Tag;
-                if (recon.dumpFile.IndexOf(C2) == -1) continue; //ip is embedded in dump file name...
+
+                //both ips are embedded in dump file name but
+                //you can also use recon.ClientAddress and recon.ServerAddress 
+                if (recon.dumpFile.IndexOf(C2) == -1) continue;   
                  
 	            foreach (TreeNode nn in n.Nodes)
                 {
@@ -76,14 +79,24 @@ namespace Scripts
                     if (db.LoadData())
                     {
                         byte[] buf = null;
+
+                        //in this example we will only process raw binary transfers (no http)
                         if (db.DataType == DataBlock.DataTypes.dtBinary)
                         {
                             buf = db.data; 
                         }
-                        /*else
+                        /*else if(db.DataType == DataBlock.DataTypes.dtHttpReq) //if you wanted to process http request
                         {
                             buf = db.GetBinaryBody();
                         }*/
+
+                        //DataBlock Source and Dest addresses are set per packet, 
+                        //you can also filter based on db.SourcePort && db.DestPort
+                        //
+                        //example to handle client requests to server port 9000:
+                        //   if(db.SourceAddress == recon.ClientAddress && db.DestPort == 9000)
+                        //
+                        //Note: this for loop only runs if we matched target server because of continue above...                        
 
                         if (buf != null && buf.Length > 0)
                         {

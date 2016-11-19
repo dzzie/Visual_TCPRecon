@@ -31,6 +31,13 @@ namespace Visual_TCPRecon
         public TcpRecon recon;
         public string EpochTimeStamp;  //For the last packet added to reassembled data block
         public string relativeTimeStamp;
+        public string SourceAddress = ""; //this is the IP that started the entire conversation stream
+        public string DestinationAddress = ""; //this is the IP it was connecting to as a client..
+        //destination address may be redundant..since recon holds both ips..we really only need to know who sent it..but whatever
+
+        public int SourcePort = 0;
+        public int DestPort = 0;
+
         public List<string> el = new List<string>();
 
         public enum DataTypes { dtBinary=0, dtHttpReq, dtHttpResp };

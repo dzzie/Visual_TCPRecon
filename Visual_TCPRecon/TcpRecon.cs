@@ -44,7 +44,10 @@ public class TcpRecon
     long[]  _srcAddr = new long[2];
     uint[]  _srcPort = new uint[2];
     uint[]  _tcpPort = new uint[2];
-    
+
+    //these two are only set once in reconmanager when a new stream is initilized...
+    public string ClientAddress = ""; //this is the IP that started the entire conversation stream
+    public string ServerAddress = ""; //this is the IP it was connecting to as a client..
 
     public PosixTimeval TimestampFirstPacket { get; set; }
     public PosixTimeval TimestampLastPacket { get; set; }
@@ -61,6 +64,10 @@ public class TcpRecon
     public long LastSavedOffset = 0;
     public bool isComplete = false;
     public int LastSourcePort = 0;     //set by ui code after it detects a packetWritten...
+    public int LastDestPort = 0;
+    public string LastSourceAddress = ""; //used as book keep for data block do not use in scripts..changes..
+    public string LastDestinationAddress = ""; //used as book keep for data block do not use in scripts..changes..
+
 
     public bool PacketWritten = false;
     public long CurrentOffset = 0;

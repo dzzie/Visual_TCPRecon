@@ -76,6 +76,10 @@ namespace Visual_TCPRecon
 
             DataBlock db = new DataBlock(recon.dumpFile, startAt, endAt - startAt, recon);
 
+            db.DestPort = recon.LastDestPort;
+            db.SourcePort = recon.LastSourcePort;
+            db.SourceAddress = recon.LastSourceAddress;
+            db.DestinationAddress = recon.LastDestinationAddress;
             db.EpochTimeStamp = curPacketTime.Seconds.ToString() + "." + curPacketTime.MicroSeconds.ToString();
 
             /*string fu = firstTimeStamp_s.ToString() + "." + firstTimeStamp_ms.ToString();
@@ -160,7 +164,12 @@ namespace Visual_TCPRecon
                 c.generateFileName(outDir);
                 recon = new TcpRecon(c.fileName);
                 recon.LastSourcePort = tcpPacket.SourcePort;
+                recon.LastDestPort = tcpPacket.DestinationPort;
                 recon.StreamStartTimeStamp = e.Packet.Timeval.Seconds.ToString() + "." + e.Packet.Timeval.MicroSeconds.ToString();
+                recon.ClientAddress = ipPacket.SourceAddress.ToString(); //who started stream..
+                recon.ServerAddress = ipPacket.DestinationAddress.ToString();
+                recon.LastSourceAddress = ipPacket.SourceAddress.ToString();
+                recon.LastDestinationAddress = ipPacket.DestinationAddress.ToString();
                 decimal curTime = decimal.Parse(recon.StreamStartTimeStamp);
                 recon.relativeTimeStamp = (curTime - firstTimeStamp).ToString();
 
@@ -184,6 +193,9 @@ namespace Visual_TCPRecon
                 {
                     AddNewNode(recon);
                     recon.LastSourcePort = tcpPacket.SourcePort;
+                    recon.LastDestPort = tcpPacket.DestinationPort;
+                    recon.LastSourceAddress = ipPacket.SourceAddress.ToString();
+                    recon.LastDestinationAddress = ipPacket.DestinationAddress.ToString();
                 }
             }
 
