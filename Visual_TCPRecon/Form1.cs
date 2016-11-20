@@ -427,49 +427,76 @@ namespace Visual_TCPRecon
 
         private void extractStreamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //note we have simplified the output file name...does not include ip..
+            //user dont extract multi ip streams..fix latter
+            //should the name be client 1, server 1 or client 1 , server 2 client 3 ?
 
             fDlg.SelectedPath = outDir;
             if(fDlg.ShowDialog() != DialogResult.OK) return;
 
             string pDir = fDlg.SelectedPath + "\\";
-            
-            int i = 0,j=0;
+
+            int c = 0, s = 0, saved = 0, total = 0, failed = 0;
+            TcpRecon recon;
+            string name = "";
+
             foreach (TreeNode n in tv.Nodes)
             {
                 if (n.Checked) //parent stream node, extract all its children
                 {
+                    recon = (TcpRecon)n.Tag;
                     foreach (TreeNode nn in n.Nodes)
                     {
                         DataBlock db = (DataBlock)nn.Tag;
                         if (db.LoadData())
                         {
-                            db.SaveToFile(pDir + n.Text+ "_" + i + ".bin");
+                            
+                            if (db.SourceAddress == recon.ServerAddress)
+                            {
+                                name = "server_" + string.Format("{0:D4}", s++);
+                            }
+                            else
+                            {
+                                name = "client_" + string.Format("{0:D4}", c++);
+                            }
+
+                            if (!db.SaveToFile(pDir + name + ".bin")) failed++;
                             db.FreeData();
-                            j++;
+                            saved++;
                         }
-                        i++;
+                        total++;
                     }
                 }
                 else //scan its subnodes to see if any of them are selected..
                 {
                     foreach (TreeNode nn in n.Nodes)
                     {
+                        recon = (TcpRecon)n.Tag;
                         if (nn.Checked)
                         {
                             DataBlock db = (DataBlock)nn.Tag;
                             if (db.LoadData())
                             {
-                                db.SaveToFile(pDir + n.Text + "_" + i + ".bin");
+                                if (db.SourceAddress == recon.ServerAddress)
+                                {
+                                    name = "server_" + string.Format("{0:D4}", s++);
+                                }
+                                else
+                                {
+                                    name = "client_" + string.Format("{0:D4}", c++);
+                                }
+
+                                if (!db.SaveToFile(pDir + name + ".bin")) failed++;
                                 db.FreeData();
-                                j++;
+                                saved++;
                             }
-                            i++;
+                            total++;
                         }
                     }
                 }
             }
 
-            MessageBox.Show(string.Format("Extraction Complete {0}/{1} blocks extracted.", j, i));
+            MessageBox.Show(string.Format("Extraction Complete Saved:{0} Total:{1} Fails:{2} blocks extracted.", saved, total-1, failed));
         }
 
         public void tabs_SelectedIndexChanged(object sender, EventArgs e)

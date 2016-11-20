@@ -48,6 +48,8 @@ public class TcpRecon
     //these two are only set once in reconmanager when a new stream is initilized...
     public string ClientAddress = ""; //this is the IP that started the entire conversation stream
     public string ServerAddress = ""; //this is the IP it was connecting to as a client..
+    public int ClientPort = 0;
+    public int ServerPort = 0;
 
     public PosixTimeval TimestampFirstPacket { get; set; }
     public PosixTimeval TimestampLastPacket { get; set; }

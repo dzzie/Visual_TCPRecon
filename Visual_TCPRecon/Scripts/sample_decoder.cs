@@ -64,58 +64,54 @@ namespace Scripts
 
                 TcpRecon recon = (TcpRecon)n.Tag;
 
-                //both ips are embedded in dump file name but
-                //you can also use recon.ClientAddress and recon.ServerAddress 
+                //both ips are embedded in dump file name
+                //you can also use recon.Client[Address|Port] recon.Server[Address|Port]
                 if (recon.dumpFile.IndexOf(C2) == -1) continue;   
                  
 	            foreach (TreeNode nn in n.Nodes)
                 {
                     j++;
                     f.setpb(j, n.Nodes.Count, 2);
-                    hits++;
+
                     DataBlock db = (DataBlock)nn.Tag;
                     w.WriteLine(n.Text + " : " + nn.Text + "\r\n------------------------------------------------");
 
-                    if (db.LoadData())
+                    if (!db.LoadData())
                     {
-                        byte[] buf = null;
+                        w.WriteLine("Failed to load data...\r\n");
+                        continue;
+                    }  
 
-                        //in this example we will only process raw binary transfers (no http)
-                        if (db.DataType == DataBlock.DataTypes.dtBinary)
-                        {
-                            buf = db.data; 
-                        }
-                        /*else if(db.DataType == DataBlock.DataTypes.dtHttpReq) //if you wanted to process http request
-                        {
-                            buf = db.GetBinaryBody();
-                        }*/
+                    byte[] buf = null;
 
-                        //DataBlock Source and Dest addresses are set per packet, 
-                        //you can also filter based on db.SourcePort && db.DestPort
-                        //
-                        //example to handle client requests to server port 9000:
-                        //   if(db.SourceAddress == recon.ClientAddress && db.DestPort == 9000)
-                        //
-                        //Note: this for loop only runs if we matched target server because of continue above...                        
-
-                        if (buf != null && buf.Length > 0)
-                        {
-                            decode(buf);
-                            w.WriteLine(HexDumper.HexDump(buf));
-                        }
-                        else
-                        {
-                            w.WriteLine("Buffer null or no data..");
-                        }
-
-                        db.FreeData();
+                    //in this example we will only process raw binary transfers (no http)
+                    if (db.DataType == DataBlock.DataTypes.dtBinary)
+                    {
+                        buf = db.data; 
                     }
-                    else
+                    /*else if(db.DataType == DataBlock.DataTypes.dtHttpReq) //if you wanted to process http request
                     {
-                        w.WriteLine("Failed to load data...");
+                        buf = db.GetBinaryBody();
+                    }*/
+
+                    //DataBlock Source and Dest addresses are set per packet, 
+                    //you can also filter based on db.SourcePort && db.DestPort
+                    //
+                    //example to handle client requests to server port 9000:
+                    //   if(db.SourceAddress == recon.ClientAddress && db.DestPort == 9000)
+                    //
+                    //Note: this for loop only runs if we matched target server because of continue above...                        
+
+                    if (buf != null && buf.Length > 0)
+                    {
+                        hits++;
+                        decode(buf);
+                        w.WriteLine(HexDumper.HexDump(buf));
+                        w.WriteLine("\r\n");
                     }
 
-                    w.WriteLine("\r\n");
+                    db.FreeData();
+                                 
 	         	}
             }
 
@@ -129,7 +125,7 @@ namespace Scripts
             }
             else
             {
-                MessageBox.Show("No packets found from the C2 you entered: " + C2);
+                MessageBox.Show("No binary data packets found from the C2 you entered: " + C2);
             }
 
 

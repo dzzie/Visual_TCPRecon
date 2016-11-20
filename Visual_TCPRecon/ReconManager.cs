@@ -163,15 +163,22 @@ namespace Visual_TCPRecon
             {
                 c.generateFileName(outDir);
                 recon = new TcpRecon(c.fileName);
-                recon.LastSourcePort = tcpPacket.SourcePort;
-                recon.LastDestPort = tcpPacket.DestinationPort;
-                recon.StreamStartTimeStamp = e.Packet.Timeval.Seconds.ToString() + "." + e.Packet.Timeval.MicroSeconds.ToString();
-                recon.ClientAddress = ipPacket.SourceAddress.ToString(); //who started stream..
+                
+                //who started stream, who is receiving the stream..static for this stream..
+                recon.ClientPort = tcpPacket.SourcePort;
+                recon.ServerPort = tcpPacket.DestinationPort;
+                recon.ClientAddress = ipPacket.SourceAddress.ToString(); 
                 recon.ServerAddress = ipPacket.DestinationAddress.ToString();
-                recon.LastSourceAddress = ipPacket.SourceAddress.ToString();
-                recon.LastDestinationAddress = ipPacket.DestinationAddress.ToString();
+
+                recon.StreamStartTimeStamp = e.Packet.Timeval.Seconds.ToString() + "." + e.Packet.Timeval.MicroSeconds.ToString();
                 decimal curTime = decimal.Parse(recon.StreamStartTimeStamp);
                 recon.relativeTimeStamp = (curTime - firstTimeStamp).ToString();
+
+                //book kepping for datablock tracking per packet (changes)
+                recon.LastSourcePort = tcpPacket.SourcePort;
+                recon.LastDestPort = tcpPacket.DestinationPort;
+                recon.LastSourceAddress = ipPacket.SourceAddress.ToString();
+                recon.LastDestinationAddress = ipPacket.DestinationAddress.ToString();
 
                 sharpPcapDict.Add(c, recon);
 
@@ -192,6 +199,7 @@ namespace Visual_TCPRecon
                 if (recon.LastSourcePort != tcpPacket.SourcePort) //previous entry is now complete so lets add it.
                 {
                     AddNewNode(recon);
+                    //book keeping for DataBlock since we are starting new packet stats now...
                     recon.LastSourcePort = tcpPacket.SourcePort;
                     recon.LastDestPort = tcpPacket.DestinationPort;
                     recon.LastSourceAddress = ipPacket.SourceAddress.ToString();

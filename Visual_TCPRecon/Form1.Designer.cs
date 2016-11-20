@@ -182,7 +182,7 @@
             this.renameIPToolStripMenuItem,
             this.resetColorsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 302);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(223, 324);
             // 
             // saveAsToolStripMenuItem
             // 
